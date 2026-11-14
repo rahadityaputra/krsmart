@@ -1,0 +1,872 @@
+INFORMATIKA	100210092	Bela Negara dan Widya Mwat Yasa	IF-A	2	46	Senin 07:30-09:15	Patt.II-3D	
+Dosen 001
+
+INFORMATIKA	100210122	Bahasa Indonesia	IF-F	2	26	Senin 07:30-09:15	Patt.I-3D	
+Dosen 002
+
+INFORMATIKA	123210163	Struktur Data	IF-F	3	28	Senin 07:30-10:00	Patt.II-1A	
+Dosen 003
+
+INFORMATIKA	123210182	Komputasi Numerik	IF-A	2	45	Senin 07:30-09:15	Patt.II-3B	
+Dosen 004
+
+INFORMATIKA	123210332	Kriptografi	IF-A	2	45	Senin 07:30-09:15	Patt.III-3C	
+Dosen 005
+
+INFORMATIKA	123210342	Data Science	IF-D	2	41	Senin 07:30-09:15	Patt.III-3A	
+Dosen 006
+
+INFORMATIKA	123210883	Realitas Virtual dan Augmentasi	IF-A	3	43	Senin 07:30-10:00	Patt.II-2A	
+Dosen 007
+
+Dosen 008
+
+INFORMATIKA	100210101	Olah Raga I	IF-A	1	41	Senin 08:15-09:15	Lapangan L	
+Dosen 009
+
+INFORMATIKA	100210101	Olah Raga I	IF-B	1	41	Senin 08:15-09:15	Lapangan M	
+Dosen 010
+
+INFORMATIKA	100210101	Olah Raga I	IF-C	1	43	Senin 08:15-09:15	Lapangan N	
+Dosen 011
+
+INFORMATIKA	100210101	Olah Raga I	IF-D	1	41	Senin 08:15-09:15	Lapangan O	
+Dosen 012
+
+INFORMATIKA	100210101	Olah Raga I	IF-E	1	44	Senin 08:15-09:15	Lapangan P	
+Dosen 013
+
+INFORMATIKA	100210101	Olah Raga I	IF-F	1	20	Senin 08:15-09:15	Lapangan Q	
+Dosen 014
+
+INFORMATIKA	100210101	Olah Raga I	IF-H	1	17	Senin 08:15-09:15	Lapangan R	
+Dosen 015
+
+INFORMATIKA	123210342	Data Science	IF-H	2	16	Senin 10:00-11:45	Patt. III-2D	
+Dosen 016
+
+INFORMATIKA	123210563	Global Positioning System	IF-A	3	45	Senin 10:00-12:30	Patt.I-1A	
+Dosen 004
+
+INFORMATIKA	100210122	Bahasa Indonesia	IF-B	2	40	Senin 10:00-11:45	Patt.III-3D	
+Dosen 002
+
+INFORMATIKA	123210043	Sistem Teknologi Basis Data	IF-C	3	43	Senin 10:00-12:30	Patt.II-3C	
+Dosen 017
+
+Dosen 018
+
+INFORMATIKA	123210202	Sistem Digital	IF-B	2	41	Senin 10:00-11:45	Patt.I-3B	
+Dosen 019
+
+Dosen 020
+
+INFORMATIKA	123210222	Pemrograman Web	IF-A	2	40	Senin 10:00-11:45	Patt.II-3B	
+Dosen 021
+
+INFORMATIKA	123210373	Sistem Operasi	IF-A	3	45	Senin 10:00-12:30	Patt.I-3D	
+Dosen 022
+
+Dosen 023
+
+INFORMATIKA	123210373	Sistem Operasi	IF-C	3	35	Senin 10:00-12:30	Patt.III-3A	
+Dosen 024
+
+Dosen 025
+
+INFORMATIKA	123210593	Pemetaan Bawah Permukaan	IF-A	3	44	Senin 10:00-12:30	Patt.II-1A	
+Dosen 026
+
+INFORMATIKA	123210071	Praktikum Implementasi Basis Data	IF-A	1	20	Senin 10:30-12:30	Laboratorium Teknologi Mobile	
+Dosen 027
+
+INFORMATIKA	123210071	Praktikum Implementasi Basis Data	IF-B	1	21	Senin 10:30-12:30	Laboratorium Geoinformatika	
+Dosen 028
+
+INFORMATIKA	123210241	Praktikum Pemrograman Web	IF-A	1	21	Senin 10:30-12:30	Laboratorium Basis Data	
+Dosen 027
+
+INFORMATIKA	123210401	Praktikum Internet of Things (IoT)	IF-A	1	28	Senin 10:30-12:30	Laboratorium Internet Of Thing	
+Dosen 029
+
+INFORMATIKA	100210122	Bahasa Indonesia	IF-H	2	32	Senin 12:30-14:15	Patt.II-1A	
+Dosen 002
+
+INFORMATIKA	123210032	Algoritma dan Pemrograman	IF-B	2	41	Senin 12:30-14:15	Patt.I-3A	
+Dosen 030
+
+Dosen 025
+
+INFORMATIKA	123210043	Sistem Teknologi Basis Data	IF-D	3	41	Senin 12:30-15:00	Patt.II-2A	
+Dosen 007
+
+Dosen 018
+
+INFORMATIKA	123210052	Logika Informatika	IF-E	2	44	Senin 12:30-14:15	Patt.I-3B	
+Dosen 031
+
+INFORMATIKA	123210182	Komputasi Numerik	IF-D	2	45	Senin 12:30-14:15	Patt.III-3A	
+Dosen 026
+
+INFORMATIKA	123210192	Interaksi Manusia dan Komputer	IF-D	2	19	Senin 12:30-14:15	Patt.III-3D	
+Dosen 032
+
+Dosen 025
+
+INFORMATIKA	123210192	Interaksi Manusia dan Komputer	IF-E	2	45	Senin 12:30-14:15	Patt.III-3C	
+Dosen 033
+
+INFORMATIKA	123210362	Internet of Things (IoT)	IF-E	2	48	Senin 12:30-14:15	Patt.III-3B	
+Dosen 029
+
+Dosen 025
+
+INFORMATIKA	123210373	Sistem Operasi	IF-D	3	45	Senin 12:30-15:00	Patt.II-3D	
+Dosen 019
+
+Dosen 018
+
+INFORMATIKA	123210382	Riset Operasi	IF-B	2	39	Senin 12:30-14:15	Patt.I-3C	
+Dosen 028
+
+INFORMATIKA	123210231	Praktikum Implementasi Struktur Data	IF-B	1	18	Senin 13:00-15:00	Laboratorium Internet Of Thing	
+Dosen 034
+
+INFORMATIKA	123210241	Praktikum Pemrograman Web	IF-B	1	19	Senin 13:00-15:00	Laboratorium Basis Data	
+Dosen 021
+
+INFORMATIKA	123210411	Praktikum Data Science	IF-A	1	29	Senin 13:00-15:00	Laboratorium Geoinformatika	
+Dosen 035
+
+INFORMATIKA	123210411	Praktikum Data Science	IF-H	1	16	Senin 13:00-15:00	Laboratorium Rancang Bangun Perangkat Lunak	
+Dosen 005
+
+INFORMATIKA	120210012	Konsep Teknologi	IF-F	2	39	Senin 13:00-14:45	Patt.I-3D	
+Dosen 020
+
+INFORMATIKA	123210373	Sistem Operasi	IF-H	3	16	Senin 15:00-17:30	Patt. III-2D	
+Dosen 024
+
+Dosen 025
+
+INFORMATIKA	120210012	Konsep Teknologi	IF-D	2	41	Senin 15:00-16:45	Patt.II-2A	
+Dosen 020
+
+INFORMATIKA	123210032	Algoritma dan Pemrograman	IF-A	2	41	Senin 15:00-16:45	Patt.I-3C	
+Dosen 030
+
+INFORMATIKA	123210043	Sistem Teknologi Basis Data	IF-E	3	44	Senin 15:00-17:30	Patt.III-3A	
+Dosen 007
+
+Dosen 018
+
+INFORMATIKA	123210052	Logika Informatika	IF-B	2	41	Senin 15:00-16:45	Patt.I-3B	
+Dosen 027
+
+INFORMATIKA	123210163	Struktur Data	IF-B	3	48	Senin 15:00-17:30	Patt.II-3B	
+Dosen 003
+
+INFORMATIKA	123210192	Interaksi Manusia dan Komputer	IF-B	2	44	Senin 15:00-16:45	Patt.III-3C	
+Dosen 033
+
+INFORMATIKA	123210392	Manajemen Proyek Perangkat Lunak	IF-A	2	33	Senin 15:00-16:45	Patt.I-3D	
+Dosen 003
+
+Dosen 036
+
+INFORMATIKA	123210593	Pemetaan Bawah Permukaan	IF-B	3	36	Senin 15:00-17:30	Patt.III-3D	
+Dosen 026
+
+INFORMATIKA	123210763	Kecerdasan Bisnis	IF-A	3	47	Senin 15:00-17:30	Patt.III-3B	
+Dosen 020
+
+INFORMATIKA	123210913	Administrasi Server	IF-A	3	48	Senin 15:00-17:30	Patt.II-1A	
+Dosen 037
+
+INFORMATIKA	123210071	Praktikum Implementasi Basis Data	IF-E	1	23	Senin 15:30-17:30	Laboratorium Basis Data	
+Dosen 019
+
+INFORMATIKA	123210071	Praktikum Implementasi Basis Data	IF-F	1	20	Senin 15:30-17:30	Laboratorium Teknologi Mobile	
+Dosen 028
+
+INFORMATIKA	123210231	Praktikum Implementasi Struktur Data	IF-H	1	17	Senin 15:30-17:30	Laboratorium Pengembangan dan Pengintegrasian Perangkat Lunak	
+Dosen 005
+
+INFORMATIKA	123210411	Praktikum Data Science	IF-B	1	28	Senin 15:30-17:30	Laboratorium Geoinformatika	
+Dosen 035
+
+INFORMATIKA	123210362	Internet of Things (IoT)	IF-A	2	48	Selasa 07:30-09:15	Patt.I-1A	
+Dosen 029
+
+Dosen 025
+
+INFORMATIKA	100210072	Pendidikan Pancasila	IF-D	2	41	Selasa 07:30-09:15	Patt.III-3A	
+Dosen 038
+
+Dosen 039
+
+INFORMATIKA	123210032	Algoritma dan Pemrograman	IF-E	2	44	Selasa 07:30-09:15	Patt.I-3B	
+Dosen 030
+
+INFORMATIKA	123210043	Sistem Teknologi Basis Data	IF-F	3	30	Selasa 07:30-10:00	Patt.I-3D	
+Dosen 007
+
+INFORMATIKA	123210043	Sistem Teknologi Basis Data	IF-H	3	17	Selasa 07:30-10:00	Patt.III-3C	
+Dosen 017
+
+INFORMATIKA	123210163	Struktur Data	IF-E	3	45	Selasa 07:30-10:00	Patt.II-3B	
+Dosen 040
+
+Dosen 041
+
+INFORMATIKA	123210172	Komputer dan Masyarakat	IF-B	2	20	Selasa 07:30-09:15	Patt.II-3D	
+Dosen 042
+
+INFORMATIKA	123210182	Komputasi Numerik	IF-B	2	17	Selasa 07:30-09:15	Patt.II-3C	
+Dosen 006
+
+INFORMATIKA	123210382	Riset Operasi	IF-C	2	30	Selasa 07:30-09:15	Patt.I-3C	
+Dosen 028
+
+INFORMATIKA	123210071	Praktikum Implementasi Basis Data	IF-D	1	19	Selasa 08:00-10:00	Laboratorium Teknologi Mobile	
+Dosen 019
+
+INFORMATIKA	123210231	Praktikum Implementasi Struktur Data	IF-C	1	20	Selasa 08:00-10:00	Laboratorium Komputasi	
+Dosen 022
+
+INFORMATIKA	123210401	Praktikum Internet of Things (IoT)	IF-B	1	28	Selasa 08:00-10:00	Laboratorium Internet Of Thing	
+Dosen 026
+
+INFORMATIKA	100210072	Pendidikan Pancasila	IF-E	2	44	Selasa 10:00-11:45	Patt.I-3B	
+Dosen 038
+
+Dosen 039
+
+INFORMATIKA	123210022	Kalkulus	IF-F	2	20	Selasa 10:00-11:45	Patt.I-3A	
+Dosen 006
+
+INFORMATIKA	123210052	Logika Informatika	IF-H	2	17	Selasa 10:00-11:45	Patt.II-2A	
+Dosen 031
+
+INFORMATIKA	123210163	Struktur Data	IF-D	3	39	Selasa 10:00-12:30	Patt.II-3A	
+Dosen 041
+
+Dosen 043
+
+INFORMATIKA	123210172	Komputer dan Masyarakat	IF-H	2	32	Selasa 10:00-11:45	Patt.II-1A	
+Dosen 042
+
+INFORMATIKA	123210192	Interaksi Manusia dan Komputer	IF-A	2	22	Selasa 10:00-11:45	Patt.III-3B	
+Dosen 032
+
+INFORMATIKA	123210222	Pemrograman Web	IF-B	2	40	Selasa 10:00-11:45	Patt.II-3B	
+Dosen 021
+
+INFORMATIKA	123210373	Sistem Operasi	IF-E	3	47	Selasa 10:00-12:30	Patt.II-3D	
+Dosen 024
+
+Dosen 018
+
+INFORMATIKA	123210382	Riset Operasi	IF-E	2	45	Selasa 10:00-11:45	Patt.I-3D	
+Dosen 028
+
+INFORMATIKA	123210392	Manajemen Proyek Perangkat Lunak	IF-E	2	47	Selasa 10:00-11:45	Patt.III-3A	
+Dosen 003
+
+Dosen 036
+
+INFORMATIKA	123210231	Praktikum Implementasi Struktur Data	IF-D	1	28	Selasa 10:30-12:30	Laboratorium Komputasi	
+Dosen 022
+
+INFORMATIKA	123210411	Praktikum Data Science	IF-C	1	28	Selasa 10:30-12:30	Laboratorium Geoinformatika	
+Dosen 035
+
+INFORMATIKA	100210092	Bela Negara dan Widya Mwat Yasa	IF-B	2	47	Selasa 12:30-14:15	Patt.III-3B	
+Dosen 022
+
+INFORMATIKA	123210013	Matematika Diskrit	IF-F	3	41	Selasa 12:30-15:00	Patt.I-3D	
+Dosen 035
+
+Dosen 023
+
+INFORMATIKA	123210022	Kalkulus	IF-D	2	41	Selasa 12:30-14:15	Patt.III-3D	
+Dosen 024
+
+INFORMATIKA	123210032	Algoritma dan Pemrograman	IF-H	2	17	Selasa 12:30-14:15	Patt.II-2A	
+Dosen 017
+
+INFORMATIKA	123210192	Interaksi Manusia dan Komputer	IF-C	2	45	Selasa 12:30-14:15	Patt.II-3D	
+Dosen 033
+
+Dosen 023
+
+INFORMATIKA	123210202	Sistem Digital	IF-C	2	46	Selasa 12:30-14:15	Patt.II-3B	
+Dosen 019
+
+Dosen 020
+
+INFORMATIKA	123210362	Internet of Things (IoT)	IF-C	2	48	Selasa 12:30-14:15	Patt.I-3C	
+Dosen 029
+
+Dosen 025
+
+INFORMATIKA	123210071	Praktikum Implementasi Basis Data	IF-J	1	23	Selasa 13:00-15:00	Laboratorium Teknologi Mobile	
+Dosen 028
+
+INFORMATIKA	123210241	Praktikum Pemrograman Web	IF-D	1	26	Selasa 13:00-15:00	Laboratorium Basis Data	
+Dosen 021
+
+INFORMATIKA	123210241	Praktikum Pemrograman Web	IF-H	1	17	Selasa 13:00-15:00	Laboratorium Rancang Bangun Perangkat Lunak	
+Dosen 005
+
+INFORMATIKA	123210401	Praktikum Internet of Things (IoT)	IF-C	1	28	Selasa 13:00-15:00	Laboratorium Internet Of Thing	
+Dosen 026
+
+INFORMATIKA	123210411	Praktikum Data Science	IF-D	1	29	Selasa 13:00-15:00	Laboratorium Geoinformatika	
+Dosen 006
+
+INFORMATIKA	100210092	Bela Negara dan Widya Mwat Yasa	IF-C	2	46	Selasa 15:00-16:45	Patt.II-2A	
+Dosen 022
+
+INFORMATIKA	123210022	Kalkulus	IF-A	2	41	Selasa 15:00-16:45	Patt.I-3C	
+Dosen 024
+
+INFORMATIKA	123210163	Struktur Data	IF-A	3	28	Selasa 15:00-17:30	Patt.I-3B	
+Dosen 041
+
+Dosen 043
+
+INFORMATIKA	123210182	Komputasi Numerik	IF-E	2	45	Selasa 15:00-16:45	Patt.III-3D	
+Dosen 004
+
+INFORMATIKA	123210192	Interaksi Manusia dan Komputer	IF-F	2	37	Selasa 15:00-16:45	Patt.III-3B	
+Dosen 033
+
+INFORMATIKA	123210222	Pemrograman Web	IF-C	2	27	Selasa 15:00-16:45	Patt.III-3C	
+Dosen 021
+
+INFORMATIKA	123210332	Kriptografi	IF-H	2	16	Selasa 15:00-16:45	Patt.I-3D	
+Dosen 005
+
+INFORMATIKA	123210392	Manajemen Proyek Perangkat Lunak	IF-C	2	46	Selasa 15:00-16:45	Patt.III-3A	
+Dosen 003
+
+Dosen 036
+
+INFORMATIKA	123210783	Pembelajaran Mesin	IF-A	3	44	Selasa 15:00-17:30	Patt.II-3B	
+Dosen 035
+
+INFORMATIKA	123210061	Praktikum Algoritma dan Pemrograman	IF-C	1	22	Selasa 15:30-17:30	Laboratorium Jaringan	
+Dosen 030
+
+INFORMATIKA	123210061	Praktikum Algoritma dan Pemrograman	IF-D	1	19	Selasa 15:30-17:30	Laboratorium Internet Of Thing	
+Dosen 007
+
+INFORMATIKA	123210071	Praktikum Implementasi Basis Data	IF-K	1	22	Selasa 15:30-17:30	Laboratorium Geoinformatika	
+Dosen 017
+
+INFORMATIKA	123210231	Praktikum Implementasi Struktur Data	IF-O	1	15	Selasa 15:30-17:30	Laboratorium Rancang Bangun Perangkat Lunak	
+Dosen 008
+
+INFORMATIKA	123210241	Praktikum Pemrograman Web	IF-E	1	19	Selasa 15:30-17:30	Laboratorium Basis Data	
+Dosen 037
+
+INFORMATIKA	100210092	Bela Negara dan Widya Mwat Yasa	IF-H	2	32	Rabu 07:30-09:15	Patt.II-1A	
+Dosen 001
+
+INFORMATIKA	120210012	Konsep Teknologi	IF-A	2	41	Rabu 07:30-09:15	Patt.I-3C	
+Dosen 033
+
+INFORMATIKA	123210052	Logika Informatika	IF-C	2	43	Rabu 07:30-09:15	Patt.III-3A	
+Dosen 027
+
+Dosen 018
+
+INFORMATIKA	123210182	Komputasi Numerik	IF-C	2	23	Rabu 07:30-09:15	Patt.II-3A	
+Dosen 006
+
+INFORMATIKA	123210213	Geoinformatika	IF-A	3	45	Rabu 07:30-10:00	Patt.III-3B	
+Dosen 026
+
+Dosen 020
+
+INFORMATIKA	123210222	Pemrograman Web	IF-D	2	40	Rabu 07:30-09:15	Patt.I-3D	
+Dosen 021
+
+Dosen 018
+
+INFORMATIKA	123210563	Global Positioning System	IF-B	3	46	Rabu 07:30-10:00	Patt.II-2A	
+Dosen 004
+
+Dosen 023
+
+INFORMATIKA	123210813	Pengolahan Citra	IF-B	3	48	Rabu 07:30-10:00	Patt.III-3C	
+Dosen 007
+
+Dosen 018
+
+INFORMATIKA	123210231	Praktikum Implementasi Struktur Data	IF-E	1	23	Rabu 08:00-10:00	Laboratorium Komputasi	
+Dosen 022
+
+INFORMATIKA	123210401	Praktikum Internet of Things (IoT)	IF-D	1	28	Rabu 08:00-10:00	Laboratorium Internet Of Thing	
+Dosen 029
+
+INFORMATIKA	123210411	Praktikum Data Science	IF-E	1	28	Rabu 08:00-10:00	Laboratorium Geoinformatika	
+Dosen 035
+
+INFORMATIKA	100210012	Pendidikan Agama Islam	IF-H	2	15	Rabu 10:00-11:45	Patt. III-2D	
+Dosen 044
+
+INFORMATIKA	100210122	Bahasa Indonesia	IF-A	2	40	Rabu 10:00-11:45	Patt.I-3B	
+Dosen 002
+
+INFORMATIKA	123210013	Matematika Diskrit	IF-B	3	41	Rabu 10:00-12:30	Patt.I-3D	
+Dosen 045
+
+INFORMATIKA	123210022	Kalkulus	IF-C	2	43	Rabu 10:00-11:45	Patt.II-3C	
+Dosen 024
+
+INFORMATIKA	123210032	Algoritma dan Pemrograman	IF-F	2	23	Rabu 10:00-11:45	Patt.II-3B	
+Dosen 017
+
+INFORMATIKA	123210182	Komputasi Numerik	IF-H	2	32	Rabu 10:00-11:45	Patt.II-1A	
+Dosen 006
+
+INFORMATIKA	123210202	Sistem Digital	IF-D	2	46	Rabu 10:00-11:45	Patt.I-3A	
+Dosen 019
+
+INFORMATIKA	123210392	Manajemen Proyek Perangkat Lunak	IF-H	2	16	Rabu 10:00-11:45	Patt.III-3D	
+Dosen 003
+
+Dosen 036
+
+INFORMATIKA	123210071	Praktikum Implementasi Basis Data	IF-G	1	21	Rabu 10:30-12:30	Laboratorium Geoinformatika	
+Dosen 028
+
+INFORMATIKA	123210241	Praktikum Pemrograman Web	IF-F	1	27	Rabu 10:30-12:30	Laboratorium Basis Data	
+Dosen 021
+
+INFORMATIKA	123210332	Kriptografi	IF-C	2	48	Rabu 12:30-14:15	Patt.I-1A	
+Dosen 024
+
+INFORMATIKA	100210072	Pendidikan Pancasila	IF-H	2	17	Rabu 12:30-14:15	Patt.II-1A	
+Dosen 038
+
+Dosen 039
+
+INFORMATIKA	100210122	Bahasa Indonesia	IF-E	2	41	Rabu 12:30-14:15	Patt.II-3C	
+Dosen 002
+
+INFORMATIKA	123210043	Sistem Teknologi Basis Data	IF-A	3	41	Rabu 12:30-15:00	Patt.I-3D	
+Dosen 017
+
+INFORMATIKA	123210213	Geoinformatika	IF-D	3	42	Rabu 12:30-15:00	Patt.II-2A	
+Dosen 004
+
+INFORMATIKA	123210061	Praktikum Algoritma dan Pemrograman	IF-J	1	22	Rabu 13:00-15:00	Laboratorium Jaringan	
+Dosen 033
+
+INFORMATIKA	123210231	Praktikum Implementasi Struktur Data	IF-F	1	27	Rabu 13:00-15:00	Laboratorium Komputasi	
+Dosen 022
+
+INFORMATIKA	123210241	Praktikum Pemrograman Web	IF-G	1	24	Rabu 13:00-15:00	Laboratorium Basis Data	
+Dosen 026
+
+INFORMATIKA	123210401	Praktikum Internet of Things (IoT)	IF-E	1	28	Rabu 13:00-15:00	Laboratorium Internet Of Thing	
+Dosen 029
+
+INFORMATIKA	123210411	Praktikum Data Science	IF-F	1	28	Rabu 13:00-15:00	Laboratorium Geoinformatika	
+Dosen 006
+
+INFORMATIKA	123210202	Sistem Digital	IF-F	2	45	Rabu 15:00-16:45	Patt.I-1A	
+Dosen 007
+
+INFORMATIKA	100210122	Bahasa Indonesia	IF-D	2	41	Rabu 15:00-16:45	Patt.II-3B	
+Dosen 002
+
+INFORMATIKA	120210012	Konsep Teknologi	IF-E	2	44	Rabu 15:00-16:45	Patt.I-3A	
+Dosen 033
+
+INFORMATIKA	123210013	Matematika Diskrit	IF-D	3	41	Rabu 15:00-17:30	Patt.III-3D	
+Dosen 035
+
+Dosen 023
+
+INFORMATIKA	123210043	Sistem Teknologi Basis Data	IF-B	3	41	Rabu 15:00-17:30	Patt.I-3D	
+Dosen 017
+
+INFORMATIKA	123210163	Struktur Data	IF-C	3	39	Rabu 15:00-17:30	Patt.II-3D	
+Dosen 041
+
+Dosen 043
+
+INFORMATIKA	123210202	Sistem Digital	IF-H	2	32	Rabu 15:00-16:45	Patt.II-1A	
+Dosen 019
+
+INFORMATIKA	123210813	Pengolahan Citra	IF-C	3	48	Rabu 15:00-17:30	Patt.I-3C	
+Dosen 028
+
+Dosen 018
+
+INFORMATIKA	123210061	Praktikum Algoritma dan Pemrograman	IF-A	1	21	Rabu 15:30-17:30	Laboratorium Komputasi	
+Dosen 024
+
+INFORMATIKA	123210061	Praktikum Algoritma dan Pemrograman	IF-E	1	23	Rabu 15:30-17:30	Laboratorium Jaringan	
+Dosen 016
+
+INFORMATIKA	123210061	Praktikum Algoritma dan Pemrograman	IF-F	1	20	Rabu 15:30-17:30	Laboratorium Internet Of Thing	
+Dosen 006
+
+INFORMATIKA	100210072	Pendidikan Pancasila	IF-F	2	19	Rabu 16:00-17:45	Patt.II-3C	
+Dosen 038
+
+Dosen 039
+
+INFORMATIKA	123210332	Kriptografi	IF-B	2	46	Kamis 07:30-09:15	Patt.I-1A	
+Dosen 005
+
+INFORMATIKA	123210783	Pembelajaran Mesin	IF-B	3	30	Kamis 07:30-10:00	Patt. III-2D	
+Dosen 035
+
+INFORMATIKA	100210012	Pendidikan Agama Islam	IF-B	2	36	Kamis 07:30-09:15	Patt.III-3D	
+Dosen 044
+
+INFORMATIKA	120210012	Konsep Teknologi	IF-H	2	17	Kamis 07:30-09:15	Patt.III-3A	
+Dosen 033
+
+INFORMATIKA	123210032	Algoritma dan Pemrograman	IF-D	2	41	Kamis 07:30-09:15	Patt.I-3C	
+Dosen 030
+
+INFORMATIKA	123210172	Komputer dan Masyarakat	IF-C	2	40	Kamis 07:30-09:15	Patt.I-3B	
+Dosen 042
+
+INFORMATIKA	123210213	Geoinformatika	IF-B	3	32	Kamis 07:30-10:00	Patt.II-3A	
+Dosen 019
+
+Dosen 020
+
+INFORMATIKA	123210222	Pemrograman Web	IF-H	2	32	Kamis 07:30-09:15	Patt.II-2A	
+Dosen 021
+
+Dosen 018
+
+INFORMATIKA	123210373	Sistem Operasi	IF-B	3	45	Kamis 07:30-10:00	Patt.II-3D	
+Dosen 022
+
+Dosen 023
+
+INFORMATIKA	123210061	Praktikum Algoritma dan Pemrograman	IF-B	1	22	Kamis 08:00-10:00	Laboratorium Jaringan	
+Dosen 024
+
+INFORMATIKA	123210231	Praktikum Implementasi Struktur Data	IF-G	1	28	Kamis 08:00-10:00	Laboratorium Komputasi	
+Dosen 026
+
+INFORMATIKA	123210241	Praktikum Pemrograman Web	IF-I	1	25	Kamis 08:00-10:00	Laboratorium Basis Data	
+Dosen 028
+
+INFORMATIKA	123210401	Praktikum Internet of Things (IoT)	IF-F	1	28	Kamis 08:00-10:00	Laboratorium Internet Of Thing	
+Dosen 029
+
+INFORMATIKA	123210411	Praktikum Data Science	IF-G	1	27	Kamis 08:00-10:00	Laboratorium Geoinformatika	
+Dosen 006
+
+INFORMATIKA	120210012	Konsep Teknologi	IF-B	2	41	Kamis 10:00-11:45	Patt.I-3D	
+Dosen 033
+
+INFORMATIKA	123210022	Kalkulus	IF-E	2	44	Kamis 10:00-11:45	Patt.II-2A	
+Dosen 024
+
+INFORMATIKA	123210032	Algoritma dan Pemrograman	IF-C	2	43	Kamis 10:00-11:45	Patt.I-3B	
+Dosen 030
+
+Dosen 025
+
+INFORMATIKA	123210052	Logika Informatika	IF-A	2	41	Kamis 10:00-11:45	Patt.III-3C	
+Dosen 027
+
+INFORMATIKA	123210172	Komputer dan Masyarakat	IF-D	2	43	Kamis 10:00-11:45	Patt.II-3A	
+Dosen 042
+
+INFORMATIKA	123210222	Pemrograman Web	IF-E	2	41	Kamis 10:00-11:45	Patt.III-3B	
+Dosen 021
+
+Dosen 018
+
+INFORMATIKA	123210342	Data Science	IF-A	2	48	Kamis 10:00-11:45	Patt.I-3C	
+Dosen 006
+
+Dosen 023
+
+INFORMATIKA	123210392	Manajemen Proyek Perangkat Lunak	IF-D	2	45	Kamis 10:00-11:45	Patt.III-3D	
+Dosen 003
+
+Dosen 036
+
+INFORMATIKA	123210061	Praktikum Algoritma dan Pemrograman	IF-L	1	22	Kamis 10:30-12:30	Laboratorium Jaringan	
+Dosen 031
+
+INFORMATIKA	123210071	Praktikum Implementasi Basis Data	IF-I	1	21	Kamis 10:30-12:30	Laboratorium Basis Data	
+Dosen 028
+
+INFORMATIKA	123210231	Praktikum Implementasi Struktur Data	IF-I	1	28	Kamis 10:30-12:30	Laboratorium Komputasi	
+Dosen 022
+
+INFORMATIKA	123210401	Praktikum Internet of Things (IoT)	IF-H	1	16	Kamis 10:30-12:30	Laboratorium Internet Of Thing	
+Dosen 029
+
+INFORMATIKA	100210012	Pendidikan Agama Islam	IF-A	2	37	Kamis 12:30-14:15	Patt.III-3D	
+Dosen 044
+
+INFORMATIKA	123210013	Matematika Diskrit	IF-H	3	17	Kamis 12:30-15:00	Patt.II-1A	
+Dosen 035
+
+INFORMATIKA	123210052	Logika Informatika	IF-F	2	42	Kamis 12:30-14:15	Patt.II-3A	
+Dosen 031
+
+INFORMATIKA	123210332	Kriptografi	IF-E	2	41	Kamis 12:30-14:15	Patt.III-3C	
+Dosen 005
+
+INFORMATIKA	123210342	Data Science	IF-C	2	43	Kamis 12:30-14:15	Patt.I-3D	
+Dosen 006
+
+INFORMATIKA	123210362	Internet of Things (IoT)	IF-B	2	31	Kamis 12:30-14:15	Patt.I-3C	
+Dosen 029
+
+Dosen 025
+
+INFORMATIKA	123210382	Riset Operasi	IF-H	2	32	Kamis 12:30-14:15	Patt.II-2A	
+Dosen 028
+
+INFORMATIKA	123210643	Pengamanan Sistem Jaringan	IF-A	3	47	Kamis 12:30-15:00	Patt.II-3D	
+Dosen 045
+
+Dosen 018
+
+INFORMATIKA	123210061	Praktikum Algoritma dan Pemrograman	IF-G	1	21	Kamis 13:00-15:00	Laboratorium Komputasi	
+Dosen 033
+
+INFORMATIKA	123210061	Praktikum Algoritma dan Pemrograman	IF-I	1	21	Kamis 13:00-15:00	Laboratorium Jaringan	
+Dosen 030
+
+INFORMATIKA	123210241	Praktikum Pemrograman Web	IF-J	1	27	Kamis 13:00-15:00	Laboratorium Basis Data	
+Dosen 021
+
+INFORMATIKA	123210401	Praktikum Internet of Things (IoT)	IF-G	1	28	Kamis 13:00-15:00	Laboratorium Internet Of Thing	
+Dosen 022
+
+INFORMATIKA	123210411	Praktikum Data Science	IF-I	1	27	Kamis 13:00-15:00	Laboratorium Geoinformatika	
+Dosen 037
+
+INFORMATIKA	123210213	Geoinformatika	IF-H	3	32	Kamis 15:00-17:30	Patt.I-1A	
+Dosen 026
+
+Dosen 020
+
+INFORMATIKA	120210012	Konsep Teknologi	IF-C	2	43	Kamis 15:00-16:45	Patt.I-3A	
+Dosen 020
+
+INFORMATIKA	123210172	Komputer dan Masyarakat	IF-A	2	35	Kamis 15:00-16:45	Patt.I-3B	
+Dosen 042
+
+INFORMATIKA	123210182	Komputasi Numerik	IF-F	2	45	Kamis 15:00-16:45	Patt.II-3D	
+Dosen 004
+
+INFORMATIKA	123210332	Kriptografi	IF-D	2	48	Kamis 15:00-16:45	Patt.III-3A	
+Dosen 005
+
+Dosen 023
+
+INFORMATIKA	123210382	Riset Operasi	IF-F	2	43	Kamis 15:00-16:45	Patt.III-3B	
+Dosen 028
+
+INFORMATIKA	123210392	Manajemen Proyek Perangkat Lunak	IF-B	2	46	Kamis 15:00-16:45	Patt.I-3D	
+Dosen 003
+
+Dosen 036
+
+INFORMATIKA	123210803	Bio Informatika	IF-A	3	40	Kamis 15:00-17:30	Patt.III-3D	
+Dosen 040
+
+INFORMATIKA	123210061	Praktikum Algoritma dan Pemrograman	IF-H	1	17	Kamis 15:30-17:30	Laboratorium Internet Of Thing	
+Dosen 037
+
+INFORMATIKA	123210071	Praktikum Implementasi Basis Data	IF-C	1	23	Kamis 15:30-17:30	Laboratorium Geoinformatika	
+Dosen 031
+
+INFORMATIKA	123210231	Praktikum Implementasi Struktur Data	IF-J	1	18	Kamis 15:30-17:30	Laboratorium Komputasi	
+Dosen 032
+
+INFORMATIKA	100210012	Pendidikan Agama Islam	IF-D	2	32	Jumat 07:30-09:15	Patt.III-3B	
+Dosen 044
+
+INFORMATIKA	100210072	Pendidikan Pancasila	IF-B	2	41	Jumat 07:30-09:15	Patt.II-3B	
+Dosen 038
+
+INFORMATIKA	123210013	Matematika Diskrit	IF-C	3	43	Jumat 07:30-10:00	Patt.I-3D	
+Dosen 035
+
+Dosen 023
+
+INFORMATIKA	123210163	Struktur Data	IF-H	3	32	Jumat 07:30-10:00	Patt.II-3D	
+Dosen 040
+
+INFORMATIKA	123210202	Sistem Digital	IF-E	2	44	Jumat 07:30-09:15	Patt.III-3C	
+Dosen 007
+
+INFORMATIKA	123210342	Data Science	IF-B	2	48	Jumat 07:30-09:15	Patt.I-3C	
+Dosen 006
+
+Dosen 023
+
+INFORMATIKA	123210362	Internet of Things (IoT)	IF-H	2	16	Jumat 07:30-09:15	Patt.I-3A	
+Dosen 029
+
+Dosen 025
+
+INFORMATIKA	123210793	Web Semantik	IF-A	3	42	Jumat 07:30-10:00	Patt.II-3A	
+Dosen 031
+
+Dosen 023
+
+INFORMATIKA	123210061	Praktikum Algoritma dan Pemrograman	IF-K	1	22	Jumat 08:00-10:00	Laboratorium Internet Of Thing	
+Dosen 030
+
+INFORMATIKA	123210231	Praktikum Implementasi Struktur Data	IF-K	1	15	Jumat 08:00-10:00	Laboratorium Komputasi	
+Dosen 032
+
+INFORMATIKA	123210241	Praktikum Pemrograman Web	IF-L	1	18	Jumat 08:00-10:00	Laboratorium Teknologi Mobile	
+Dosen 004
+
+INFORMATIKA	100210012	Pendidikan Agama Islam	IF-E	2	41	Jumat 10:00-11:45	Patt.II-3A	
+Dosen 044
+
+INFORMATIKA	100210072	Pendidikan Pancasila	IF-A	2	41	Jumat 10:00-11:45	Patt.III-3A	
+Dosen 038
+
+INFORMATIKA	100210092	Bela Negara dan Widya Mwat Yasa	IF-E	2	46	Jumat 10:00-11:45	Patt.I-3C	
+Dosen 022
+
+INFORMATIKA	123210022	Kalkulus	IF-B	2	41	Jumat 10:00-11:45	Patt.II-1A	
+Dosen 024
+
+INFORMATIKA	123210172	Komputer dan Masyarakat	IF-E	2	40	Jumat 10:00-11:45	Patt.II-3B	
+Dosen 033
+
+INFORMATIKA	123210192	Interaksi Manusia dan Komputer	IF-H	2	32	Jumat 10:00-11:45	Patt.I-3B	
+Dosen 032
+
+Dosen 025
+
+INFORMATIKA	123210222	Pemrograman Web	IF-F	2	40	Jumat 10:00-11:45	Patt.I-3A	
+Dosen 017
+
+INFORMATIKA	123210342	Data Science	IF-E	2	48	Jumat 10:00-11:45	Patt.III-3C	
+Dosen 006
+
+INFORMATIKA	123210362	Internet of Things (IoT)	IF-D	2	48	Jumat 10:00-11:45	Patt.II-2A	
+Dosen 029
+
+Dosen 025
+
+INFORMATIKA	123210382	Riset Operasi	IF-D	2	46	Jumat 10:00-11:45	Patt.II-3C	
+Dosen 028
+
+INFORMATIKA	100210072	Pendidikan Pancasila	IF-C	2	43	Jumat 13:00-14:45	Patt.I-1A	
+Dosen 038
+
+INFORMATIKA	123210071	Praktikum Implementasi Basis Data	IF-H	1	17	Jumat 13:00-15:00	Laboratorium Komputasi	
+Dosen 027
+
+INFORMATIKA	123210241	Praktikum Pemrograman Web	IF-O	1	15	Jumat 13:00-15:00	Laboratorium Geoinformatika	
+Dosen 031
+
+INFORMATIKA	123210401	Praktikum Internet of Things (IoT)	IF-I	1	28	Jumat 13:00-15:00	Laboratorium Internet Of Thing	
+Dosen 029
+
+INFORMATIKA	100210012	Pendidikan Agama Islam	IF-F	2	17	Jumat 13:00-14:45	Patt.II-3B	
+Dosen 044
+
+INFORMATIKA	123210013	Matematika Diskrit	IF-A	3	41	Jumat 13:00-15:30	Patt.III-3A	
+Dosen 045
+
+INFORMATIKA	123210013	Matematika Diskrit	IF-E	3	44	Jumat 13:00-15:30	Patt.III-3C	
+Dosen 035
+
+Dosen 023
+
+INFORMATIKA	123210213	Geoinformatika	IF-C	3	20	Jumat 13:00-15:30	Patt.III-3D	
+Dosen 019
+
+Dosen 020
+
+INFORMATIKA	123210213	Geoinformatika	IF-E	3	40	Jumat 13:00-15:30	Patt.I-3C	
+Dosen 004
+
+INFORMATIKA	123210213	Geoinformatika	IF-F	3	41	Jumat 13:00-15:30	Patt.II-3C	
+Dosen 026
+
+INFORMATIKA	123210813	Pengolahan Citra	IF-A	3	48	Jumat 13:00-15:30	Patt.I-3D	
+Dosen 028
+
+Dosen 018
+
+INFORMATIKA	123210071	Praktikum Implementasi Basis Data	IF-L	1	23	Jumat 15:30-17:30	Laboratorium Basis Data	
+Dosen 004
+
+INFORMATIKA	100210012	Pendidikan Agama Islam	IF-C	2	33	Jumat 15:30-17:15	Patt.II-2A	
+Dosen 044
+
+INFORMATIKA	100210092	Bela Negara dan Widya Mwat Yasa	IF-D	2	44	Jumat 15:30-17:15	Patt.II-3B	
+Dosen 022
+
+INFORMATIKA	100210122	Bahasa Indonesia	IF-C	2	21	Jumat 15:30-17:15	Patt.II-3C	
+Dosen 002
+
+INFORMATIKA	123210022	Kalkulus	IF-H	2	17	Jumat 15:30-17:15	Patt.II-1A	
+Dosen 006
+
+INFORMATIKA	123210052	Logika Informatika	IF-D	2	41	Jumat 15:30-17:15	Patt.I-3D	
+Dosen 027
+
+INFORMATIKA	123210172	Komputer dan Masyarakat	IF-F	2	31	Jumat 15:30-17:15	Patt.II-3A	
+Dosen 033
+
+INFORMATIKA	123210553	Penginderaan Jarak Jauh	IF-A	3	48	Jumat 15:30-18:00	Patt.III-3D	
+Dosen 019
+
+Dosen 020
+
+INFORMATIKA	123210553	Penginderaan Jarak Jauh	IF-B	3	48	Jumat 15:30-18:00	Patt.I-3C	
+Dosen 026
+
+Dosen 020
+
+INFORMATIKA	100210022	Pendidikan Agama Kristen	IF-A	2	21	Sabtu 07:30-09:15	Patt.II-3C	
+Dosen 046
+
+INFORMATIKA	100210032	Pendidikan Agama Katholik	IF-A	2	11	Sabtu 07:30-09:15	Patt.II-3A	
+Dosen 047
+
+INFORMATIKA	100210042	Pendidikan Agama Hindu	IF-A	2	2	Sabtu 07:30-09:15	Patt.I-1B	
+Dosen 048
+
+INFORMATIKA	120210032	Kapita Selekta	IF-A	2	46	Sabtu 07:30-09:15	Patt.I-3A	
+Dosen 029
+
+INFORMATIKA	120210032	Kapita Selekta	IF-H	2	16	Sabtu 07:30-09:15	Patt.I-3B	
+Dosen 035
+
+INFORMATIKA	100210052	Pendidikan Agama Budha	IF-A	2	2	Sabtu 09:30-11:15	Patt.I-1A	
+Dosen 049
+
+INFORMATIKA	120210032	Kapita Selekta	IF-B	2	45	Sabtu 09:30-11:15	Patt.I-3A	
+Dosen 029
+
+INFORMATIKA	120210032	Kapita Selekta	IF-C	2	45	Sabtu 11:30-13:15	Patt.I-3A	
+Dosen 029
+
+INFORMATIKA	120210032	Kapita Selekta	IF-D	2	46	Sabtu 13:30-15:15	Patt.I-3A	
+Dosen 029
+
+INFORMATIKA	120210032	Kapita Selekta	IF-E	2	48	Sabtu 15:30-17:15	Patt.I-3A	
+Dosen 022
