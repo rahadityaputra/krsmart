@@ -1,6 +1,13 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { addDataSource, activateDataSource } from "../../../src/business/use-cases/datasource/addDataSource";
-import { clearDataSources, getActiveDataSourceId, getAllDataSources } from "../../../src/data/repository/dataSourceRepository";
+import {
+  addDataSource,
+  activateDataSource,
+} from "../../../src/business/use-cases/datasource/createDataSource";
+import {
+  clearDataSources,
+  getActiveDataSourceId,
+  getAllDataSources,
+} from "../../../src/data/repository/dataSourceRepository";
 
 // Sample data teks mentah valid: 1 mata kuliah (Bela Negara)
 const VALID_RAW_DATA = `INFORMATIKA\t100210092\tBela Negara dan Widya Mwat Yasa\tIF-A\t2\t46\tSenin 07:30-09:15\tPatt.II-3D
@@ -71,7 +78,9 @@ describe("Use Case: addDataSource", () => {
     expect(result.dataSource?.name).toBe("Jadwal 2026");
     expect(result.dataSource?.subjectCount).toBe(1);
     expect(result.dataSource?.subjects.length).toBe(1);
-    expect(result.dataSource?.subjects[0]?.name).toBe("Bela Negara dan Widya Mwat Yasa");
+    expect(result.dataSource?.subjects[0]?.name).toBe(
+      "Bela Negara dan Widya Mwat Yasa",
+    );
 
     // Pastikan tersimpan dan menjadi data source aktif
     const activeId = getActiveDataSourceId();

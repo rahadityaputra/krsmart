@@ -6,7 +6,7 @@ const getStorage = (): Storage | null => {
   }
 };
 
-export const setItem = <T>(key: string, value: T): boolean => {
+export const setItem = (key: string, value: unknown): boolean => {
   const storage = getStorage();
   if (!storage) return false;
 

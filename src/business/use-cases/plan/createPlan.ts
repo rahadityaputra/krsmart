@@ -1,14 +1,13 @@
 import { addPlan as repoAddPlan } from "../../../data/repository/planRepository";
-import { getActiveDataSourceId } from "../../../data/repository/dataSourceRepository";
 import type { Plan } from "../../types/plan.types";
 
-export interface AddPlanInput {
+export interface createPlanInput {
   name: string;
   datasourceId?: string;
   courseIds?: number[];
 }
 
-export interface AddPlanResult {
+export interface createPlanResult {
   success: boolean;
   plan?: Plan;
   error?: string;
@@ -20,23 +19,25 @@ export interface AddPlanResult {
  * Validasi:
  * - Nama plan tidak boleh kosong.
  */
-export const addPlan = (input: AddPlanInput): AddPlanResult => {
+export const createPlan = (input: createPlanInput): createPlanResult => {
   const name = input.name.trim();
   if (!name) {
     return { success: false, error: "Nama plan tidak boleh kosong." };
   }
 
-  const datasourceId = input.datasourceId ?? getActiveDataSourceId() ?? undefined;
+  const datasourceId = input.datasourceId ?? undefined;
 
   const plan = repoAddPlan({
     name,
     datasourceId,
     data: {
       choosed: input.courseIds ?? [],
-      available: [],
+      available: input.courseIds ?? [],
       unavailable: [],
     },
   });
+
+  console.log(plan);
 
   if (!plan) {
     return { success: false, error: "Gagal menyimpan plan." };

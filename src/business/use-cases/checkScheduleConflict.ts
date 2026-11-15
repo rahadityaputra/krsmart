@@ -1,12 +1,11 @@
 import type { Schedule } from "../types/scedule.types";
-import type { Course } from "../types/course.types";
 
 export type ConflictReason = "time" | "room" | "lecturer";
 
 export interface ScheduleConflict {
-  subject: Course;               
+  schedule: Schedule;
   reasons: ConflictReason[];
-  sharedLecturers: string[];      
+  sharedLecturers: string[];
 }
 
 export interface ConflictResult {
@@ -26,32 +25,32 @@ const isTimeOverlap = (a: Schedule, b: Schedule): boolean =>
 
 const normalize = (text: string): string => text.trim().toLowerCase();
 
-const isSameRoom = (a: Course, b: Course): boolean =>
+const isSameRoom = (a: Schedule, b: Schedule): boolean =>
   normalize(a.classRoom) === normalize(b.classRoom);
 
-const getSharedLecturers = (a: Course, b: Course): string[] =>
+const getSharedLecturers = (a: Schedule, b: Schedule): string[] =>
   a.lecturers.filter((lecturer) => b.lecturers.includes(lecturer));
 
-const buildConflict = (subject: Course, other: Course): ScheduleConflict => {
-  const sharedLecturers = getSharedLecturers(subject, other);
+const buildConflict = (schedule: Schedule, other: Schedule): ScheduleConflict => {
+  const sharedLecturers = getSharedLecturers(schedule, other);
 
   const reasons: ConflictReason[] = [
     "time",
-    ...(isSameRoom(subject, other) ? (["room"] as const) : []),
+    ...(isSameRoom(schedule, other) ? (["room"] as const) : []),
     ...(sharedLecturers.length > 0 ? (["lecturer"] as const) : []),
   ];
 
-  return { subject: other, reasons, sharedLecturers };
+  return { schedule: other, reasons, sharedLecturers };
 };
 
 export const checkScheduleConflict = (
-  subject: Course,
-  others: Course[]
+  schedule: Schedule,
+  others: Schedule[]
 ): ConflictResult => {
   const conflicts = others
-    .filter((other) => other.id !== subject.id)
-    .filter((other) => isTimeOverlap(subject.schedule, other.schedule))
-    .map((other) => buildConflict(subject, other));
+    .filter((other) => other.id !== schedule.id)
+    .filter((other) => isTimeOverlap(schedule, other))
+    .map((other) => buildConflict(schedule, other));
 
   return {
     hasConflict: conflicts.length > 0,

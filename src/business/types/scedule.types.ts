@@ -1,9 +1,17 @@
+import type { Course } from "./course.types";
+
 export interface IntervalTime {
-    start: string;
-    end: string;           
+  start: string;
+  end: string;
 }
 
 export interface Schedule {
-    day: string;
-    intervalTime: IntervalTime;
+  id: number;
+  course: Course; 
+  className: string; 
+  numberOfStudent: number; 
+  day: string;
+  intervalTime: IntervalTime; 
+  classRoom: string; 
+  lecturers: string[];
 }
