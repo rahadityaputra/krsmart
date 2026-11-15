@@ -1,20 +1,16 @@
-import { useReducer } from "react";
-import { createDataSource } from "../../business/use-cases/datasource/createDataSource";
-import {
-  getDataSource,
-  getDataSources,
-} from "../../business/use-cases/datasource/getDataSource";
-import { createPlan } from "../../business/use-cases/plan/createPlan";
-import { getPlans } from "../../business/use-cases/plan/getPlan";
-import { deletePlan } from "../../business/use-cases/plan/deletePlan";
-import { duplicatePlan } from "../../business/use-cases/plan/duplicatePlan";
-import {
-  addSchedule,
-  calculatePlanData,
-} from "../../business/use-cases/plan/addSchedule";
-import { removeSchedule } from "../../business/use-cases/plan/removeSchedule";
-import { deleteDataSource } from "../../business/use-cases/datasource/deleteDataSource";
-import { parseSubjects } from "../../business/use-cases/parser";
+import { useReducer } from 'react'
+import { getDataSource, getDataSources } from '../../business/use-cases/datasource/getDataSource'
+import { getPlans } from '../../business/use-cases/plan/getPlan'
+import { deletePlan } from '../../business/use-cases/plan/deletePlan'
+import { duplicatePlan } from '../../business/use-cases/plan/duplicatePlan'
+import { deleteDataSource } from '../../business/use-cases/datasource/deleteDataSource'
+import { parseSubjects } from '../../business/use-cases/parser'
+import { createView } from '../../business/use-cases/view/createView'
+import { getViews, getResolvedView } from '../../business/use-cases/view/getView'
+import { addSchedule, calculatePlanData } from '../../business/use-cases/plan/addSchedule'
+import { createDataSource } from '../../business/use-cases/datasource/createDataSource'
+import { createPlan } from '../../business/use-cases/plan/createPlan'
+import { removeSchedule } from '../../business/use-cases/plan/removeSchedule'
 
 export function useWorkspace() {
   const [, refresh] = useReducer((revision: number) => revision + 1, 0);
@@ -25,6 +21,13 @@ export function useWorkspace() {
   }
   return {
     plans: getPlans(),
+    views: getViews(),
+    view: getResolvedView,
+    createView: (name: string, planIds: string[]) => change(() => {
+      const result = createView({ name, planIds })
+      if (!result.view) throw new Error(result.error)
+      return result.view
+    }),
     sources: getDataSources(),
     source: getDataSource,
     preview: parseSubjects,

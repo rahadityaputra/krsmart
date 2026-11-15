@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { Course } from "../business/types/course.types";
+
 import type { Plan } from "../business/types/plan.types";
-import { Calendar, Dialog, ErrorText, credits, time } from "./components";
+import { Calendar, Dialog, ErrorText } from "./components";
 import type { Workspace } from "./hooks/useWorkspace";
+import { SubjectPicker } from "./components/SubjectPicker";
+import type { Schedule } from "../business/types/scedule.types";
 
 const classTabs = [
   { id: "selected", label: "Kelas terpilih" },
@@ -10,73 +13,111 @@ const classTabs = [
   { id: "blocked", label: "Kelas bentrok" },
 ] as const;
 
+type ClassTab = (typeof classTabs)[number]["id"];
+
+const emptyMessage: Record<ClassTab, string> = {
+  selected: "Belum ada kelas pada rencana ini.",
+  available: "Tidak ada kelas tambahan yang bisa dipilih.",
+  blocked: "Belum ada bentrok pada pilihan ini.",
+};
+
+const totalCredits = (items: Schedule[]) =>
+  items.reduce((sum, item) => sum + item.course.credits, 0);
+
+const timeRange = (item: Schedule) =>
+  `${item.intervalTime.start}–${item.intervalTime.end}`;
+
 export function Planner({
   plan,
   workspace,
+  draftCodes,
+  onDraftChange,
 }: {
   plan: Plan;
   workspace: Workspace;
+  draftCodes?: string[];
+  onDraftChange: (codes: string[]) => void;
 }) {
   const source = workspace.source(plan.datasourceId ?? "");
-  const courses = source?.subjects ?? [];
-  const [editing, setEditing] = useState(!plan.data?.choosed.length);
-  const [codes, setCodes] = useState(() => [
-    ...new Set(
-      courses
-        .filter((course) => plan.data?.choosed.includes(course.id))
-        .map((course) => course.code),
-    ),
-  ]);
+  const schedules = useMemo<Schedule[]>(
+    () => source?.schedules ?? [],
+    [source],
+  );
+
+  // Course unik dari seluruh schedule (satu course bisa punya banyak kelas)
+  const courses = useMemo<Course[]>(() => {
+    const byId = new Map<number, Course>();
+    for (const schedule of schedules) {
+      if (!byId.has(schedule.course.id)) {
+        byId.set(schedule.course.id, schedule.course);
+      }
+    }
+    return [...byId.values()];
+  }, [schedules]);
+
+  const chosenIds = plan.data?.choosed ?? [];
+  const selected = schedules.filter((item) => chosenIds.includes(item.id));
+  const selectedCodes = new Set(selected.map((item) => item.course.code));
+
+  // Kode course yang dipilih user = draft/plan + course dari kelas yang sudah dipilih
+  const codes = [
+    ...new Set([
+      ...(draftCodes ?? plan.choosedCourses ?? []),
+      ...selectedCodes,
+    ]),
+  ];
+
+  const [editing, setEditing] = useState(
+    !draftCodes?.length && !plan.choosedCourses?.length && !chosenIds.length,
+  );
   const [query, setQuery] = useState("");
   const [limit, setLimit] = useState("");
   const [error, setError] = useState("");
   const [ai, setAi] = useState(false);
-  const [classTab, setClassTab] =
-    useState<(typeof classTabs)[number]["id"]>("available");
-  const selected = courses.filter((course) =>
-    plan.data?.choosed.includes(course.id),
-  );
-  const subjects = [
-    ...new Map(courses.map((course) => [course.code, course])).values(),
-  ].sort((a, b) => a.name.localeCompare(b.name, "id"));
-  const choices = courses.filter((course) => codes.includes(course.code));
+  const [classTab, setClassTab] = useState<ClassTab>("available");
+
+  // Semua kelas (schedule) dari course yang dipilih
+  const choices = schedules.filter((item) => codes.includes(item.course.code));
   const availability = workspace.availability(
     choices,
-    selected.map((course) => course.id),
+    selected.map((item) => item.id),
   );
-  const matches = (course: Course) =>
-    `${course.name} ${course.code} ${course.className} ${course.lecturers.join(" ")}`
+
+  const matches = (item: Schedule) =>
+    `${item.course.name} ${item.course.code} ${item.className} ${item.lecturers.join(" ")}`
       .toLowerCase()
       .includes(query.trim().toLowerCase());
+
   const ready = choices.filter(
-    (course) => availability.available.includes(course.id) && matches(course),
+    (item) =>
+      availability.available.includes(item.id) &&
+      !selectedCodes.has(item.course.code) &&
+      matches(item),
   );
   const blocked = choices.filter(
-    (course) =>
+    (item) =>
       availability.unavailable.some(
         (option) =>
-          option.id === course.id &&
+          option.id === item.id &&
           option.reason.some((reason) => reason.startsWith("Bentrok")),
       ) &&
-      !selected.some((item) => item.code === course.code) &&
-      matches(course),
+      !selectedCodes.has(item.course.code) &&
+      matches(item),
   );
-  const classCounts = {
-    selected: selected.filter(matches).length,
+  const selectedMatches = selected.filter(matches);
+
+  const classCounts: Record<ClassTab, number> = {
+    selected: selectedMatches.length,
     available: ready.length,
     blocked: blocked.length,
   };
-  const tabCourses =
+  const tabItems =
     classTab === "selected"
-      ? selected.filter(matches)
+      ? selectedMatches
       : classTab === "available"
         ? ready
         : blocked;
-  const emptyMessage = {
-    selected: "Belum ada kelas pada rencana ini.",
-    available: "Tidak ada kelas tambahan yang bisa dipilih.",
-    blocked: "Belum ada bentrok pada pilihan ini.",
-  };
+
   function act(action: () => void) {
     setError("");
     try {
@@ -85,10 +126,14 @@ export function Planner({
       setError((problem as Error).message);
     }
   }
-  function pick(course: Course, remove = false) {
-    act(() => workspace.pick(plan.id, course.id, remove));
+
+  function pick(item: Schedule, remove = false) {
+    act(() => {
+      workspace.pick(plan.id, item.id, remove);
+    });
   }
-  if (!source)
+
+  if (!source) {
     return (
       <div className="empty paper">
         <h1>{plan.name}</h1>
@@ -96,6 +141,7 @@ export function Planner({
         <a href="#/">Kembali ke rencana KRS</a>
       </div>
     );
+  }
 
   return (
     <div className="planner">
@@ -110,85 +156,48 @@ export function Planner({
         <div className="button-row">
           <button
             className="secondary"
-            onClick={() =>
+            onClick={() => {
               act(() => {
                 const next = workspace.duplicatePlan(plan.id);
-                location.hash = `/plan/${next.id}`;
-              })
-            }
+                location.hash = `#/plan/${encodeURIComponent(next.id)}`;
+              });
+            }}
           >
             Duplikasi
           </button>
         </div>
       </header>
       <ErrorText message={error} />
+
       {editing ? (
         <section className="paper select-subjects">
           <div className="section-heading">
-            <div>
-              <h2>Pilih mata kuliah</h2>
-              <p>
-                {codes.length} mata kuliah dipilih ·{" "}
-                {credits(
-                  subjects.filter((course) => codes.includes(course.code)),
-                )}{" "}
-                SKS
-              </p>
-            </div>
             <button
               className="primary"
               disabled={!codes.length}
-              onClick={() =>
-                act(() => {
-                  setQuery("");
-                  setEditing(false);
-                  setClassTab("available");
-                })
-              }
+              onClick={() => {
+                setQuery("");
+                setEditing(false);
+                setClassTab("available");
+              }}
             >
               Lanjut pilih kelas
             </button>
           </div>
-          <label>
-            <span className="sr-only">Cari mata kuliah</span>
-            <input
-              type="search"
-              value={query}
-              placeholder="Cari nama atau kode mata kuliah…"
-              onChange={(event) => setQuery(event.target.value)}
-            />
-          </label>
-          <div className="subject-list">
-            {subjects.filter(matches).map((course) => (
-              <label className="subject-row" key={course.code}>
-                <input
-                  type="checkbox"
-                  checked={codes.includes(course.code)}
-                  disabled={selected.some((item) => item.code === course.code)}
-                  onChange={(event) =>
-                    setCodes(
-                      event.target.checked
-                        ? [...codes, course.code]
-                        : codes.filter((code) => code !== course.code),
-                    )
-                  }
-                />
-                <span>{course.name}</span>
-                <small>{course.credits} SKS</small>
-              </label>
-            ))}
-          </div>
-          {!subjects.some(matches) && (
-            <p>Nama atau kode ini tidak ditemukan dalam katalog.</p>
-          )}
+          <SubjectPicker
+            courses={courses}
+            codes={codes}
+            onChange={onDraftChange}
+            locked={[...selectedCodes]}
+          />
         </section>
       ) : (
         <>
           <div className="planner-toolbar paper">
             <div>
-              <strong>{credits(selected)} SKS</strong>
+              <strong>{totalCredits(selected)} SKS</strong>
               <span>
-                {selected.length} / {codes.length} mata kuliah terjadwal
+                {selectedCodes.size} / {codes.length} mata kuliah terjadwal
               </span>
             </div>
             <label className="limit">
@@ -199,7 +208,9 @@ export function Planner({
                 max="99"
                 value={limit}
                 placeholder="Opsional"
-                onChange={(event) => setLimit(event.target.value)}
+                onChange={(event) => {
+                  setLimit(event.target.value);
+                }}
               />
             </label>
             <div className="button-row">
@@ -212,16 +223,23 @@ export function Planner({
               >
                 Ubah mata kuliah
               </button>
-              <button className="secondary" onClick={() => setAi(true)}>
+              <button
+                className="secondary"
+                onClick={() => {
+                  setAi(true);
+                }}
+              >
                 Asisten AI
               </button>
             </div>
           </div>
-          {limit && credits(selected) > Number(limit) && (
+
+          {limit && totalCredits(selected) > Number(limit) && (
             <p className="notice" role="status">
               Total melebihi batas {limit} SKS.
             </p>
           )}
+
           <section className="calendar-panel" aria-labelledby="calendar-title">
             <div className="section-heading">
               <h2 id="calendar-title">Kalender mingguan</h2>
@@ -231,10 +249,13 @@ export function Planner({
               <p className="notice">Pilih kelas untuk mengisi kalender.</p>
             )}
             <Calendar
-              courses={selected}
-              onRemove={(course) => pick(course, true)}
+              schedules={selected}
+              onRemove={(item) => {
+                pick(item, true);
+              }}
             />
           </section>
+
           <section className="class-section" aria-label="Daftar kelas">
             <div
               className="class-tabs"
@@ -250,7 +271,9 @@ export function Planner({
                   aria-controls={`class-panel-${id}`}
                   aria-selected={classTab === id}
                   tabIndex={classTab === id ? 0 : -1}
-                  onClick={() => setClassTab(id)}
+                  onClick={() => {
+                    setClassTab(id);
+                  }}
                   onKeyDown={(event) => {
                     const last = classTabs.length - 1;
                     const next = {
@@ -270,6 +293,7 @@ export function Planner({
                 </button>
               ))}
             </div>
+
             {classTabs.map(({ id }) => (
               <div
                 key={id}
@@ -287,59 +311,71 @@ export function Planner({
                         type="search"
                         value={query}
                         placeholder="Cari mata kuliah atau dosen…"
-                        onChange={(event) => setQuery(event.target.value)}
+                        onChange={(event) => {
+                          setQuery(event.target.value);
+                        }}
                       />
                     </label>
-                    {!tabCourses.length && (
+                    {!tabItems.length && (
                       <p className="empty">
                         {query.trim()
                           ? "Tidak ada kelas yang cocok dengan pencarian."
                           : emptyMessage[id]}
                       </p>
                     )}
-                    {tabCourses.map((course) => (
-                      <div className="class-option" key={course.id}>
-                        <div>
-                          <strong>{course.name}</strong>
-                          <small>
-                            {course.className} · {course.credits} SKS
-                          </small>
-                        </div>
-                        <div>
-                          <span>
-                            {course.schedule.day} {time(course)}
-                          </span>
-                          <small>{course.classRoom}</small>
-                        </div>
-                        <div className="class-lecturers">
-                          {course.lecturers.map((name) => (
-                            <small key={name}>{name}</small>
-                          ))}
-                        </div>
-                        {id === "blocked" ? (
-                          <small className="danger-text class-reason">
-                            {availability.unavailable
-                              .find((entry) => entry.id === course.id)
-                              ?.reason.join(" · ")}
-                          </small>
-                        ) : (
-                          <button
-                            className={
-                              id === "selected"
-                                ? "quiet danger-text"
-                                : "secondary"
-                            }
-                            onClick={() => pick(course, id === "selected")}
-                          >
-                            {id === "selected" ? "Batal pilih" : "Pilih kelas"}
-                            <span className="sr-only">
-                              {" "}
-                              {course.name} {course.className}
+                    <div
+                      className={
+                        id === "available" ? "class-options-grid" : undefined
+                      }
+                    >
+                      {tabItems.map((item) => (
+                        <div className="class-option" key={item.id}>
+                          <div>
+                            <strong>{item.course.name}</strong>
+                            <small>
+                              {item.className} · {item.course.credits} SKS
+                            </small>
+                          </div>
+                          <div>
+                            <span>
+                              {item.day} {timeRange(item)}
                             </span>
-                          </button>
-                        )}
-                      </div>
-                    ))}
+                            <small>{item.classRoom}</small>
+                          </div>
+                          <div className="class-lecturers">
+                            {item.lecturers.map((name) => (
+                              <small key={name}>{name}</small>
+                            ))}
+                          </div>
+                          {id === "blocked" ? (
+                            <small className="danger-text class-reason">
+                              {availability.unavailable
+                                .find((entry) => entry.id === item.id)
+                                ?.reason.join(" · ")}
+                            </small>
+                          ) : (
+                            <button
+                              className={
+                                id === "selected"
+                                  ? "quiet danger-text"
+                                  : "secondary"
+                              }
+                              onClick={() => {
+                                pick(item, id === "selected");
+                              }}
+                            >
+                              {id === "selected"
+                                ? "Batal pilih"
+                                : "Pilih kelas"}
+                              <span className="sr-only">
+                                {" "}
+                                {item.course.name} {item.className}
+                              </span>
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   </>
                 )}
               </div>
@@ -347,13 +383,24 @@ export function Planner({
           </section>
         </>
       )}
+
       {ai && (
-        <Dialog title="Asisten jadwal" onClose={() => setAi(false)}>
+        <Dialog
+          title="Asisten jadwal"
+          onClose={() => {
+            setAi(false);
+          }}
+        >
           <p>
             Penjadwalan berdasarkan preferensi melalui Supabase segera hadir.
           </p>
           <footer className="actions">
-            <button className="secondary" onClick={() => setAi(false)}>
+            <button
+              className="secondary"
+              onClick={() => {
+                setAi(false);
+              }}
+            >
               Tutup
             </button>
           </footer>
