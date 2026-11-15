@@ -3,6 +3,7 @@ import type { Course } from '../business/types/course.types'
 import type { Plan } from '../business/types/plan.types'
 import { Calendar, Dialog, ErrorText, credits, time } from './components'
 import type { Workspace } from './hooks/useWorkspace'
+import { SubjectPicker } from './components/SubjectPicker'
 
 const classTabs = [
   { id: 'selected', label: 'Kelas terpilih' },
@@ -10,18 +11,25 @@ const classTabs = [
   { id: 'blocked', label: 'Kelas bentrok' },
 ] as const
 
-export function Planner({ plan, workspace }: { plan: Plan; workspace: Workspace }) {
+export function Planner({ plan, workspace, draftCodes, onDraftChange }: {
+  plan: Plan
+  workspace: Workspace
+  draftCodes?: string[]
+  onDraftChange: (codes: string[]) => void
+}) {
   const source = workspace.source(plan.datasourceId ?? '')
   const courses = source?.subjects ?? []
-  const [editing, setEditing] = useState(!plan.data?.choosed.length)
-  const [codes, setCodes] = useState(() => [...new Set(courses.filter((course) => plan.data?.choosed.includes(course.id)).map((course) => course.code))])
+  const [editing, setEditing] = useState(!draftCodes?.length && !plan.choosedCourses?.length && !plan.data?.choosed.length)
+  const codes = [...new Set([
+    ...(draftCodes ?? plan.choosedCourses ?? []),
+    ...courses.filter((course) => plan.data?.choosed.includes(course.id)).map((course) => course.code),
+  ])]
   const [query, setQuery] = useState('')
   const [limit, setLimit] = useState('')
   const [error, setError] = useState('')
   const [ai, setAi] = useState(false)
   const [classTab, setClassTab] = useState<(typeof classTabs)[number]['id']>('available')
   const selected = courses.filter((course) => plan.data?.choosed.includes(course.id))
-  const subjects = [...new Map(courses.map((course) => [course.code, course])).values()].sort((a, b) => a.name.localeCompare(b.name, 'id'))
   const choices = courses.filter((course) => codes.includes(course.code))
   const availability = workspace.availability(choices, selected.map((course) => course.id))
   const matches = (course: Course) => `${course.name} ${course.code} ${course.className} ${course.lecturers.join(' ')}`.toLowerCase().includes(query.trim().toLowerCase())
@@ -55,17 +63,11 @@ export function Planner({ plan, workspace }: { plan: Plan; workspace: Workspace 
     </header>
     <ErrorText message={error} />
     {editing ? <section className="paper select-subjects">
-      <div className="section-heading"><div><h2>Pilih mata kuliah</h2><p>{codes.length} mata kuliah dipilih · {credits(subjects.filter((course) => codes.includes(course.code)))} SKS</p></div>
+      <div className="section-heading">
         <button className="primary" disabled={!codes.length} onClick={() => act(() => {
           setQuery(''); setEditing(false); setClassTab('available')
         })}>Lanjut pilih kelas</button></div>
-      <label><span className="sr-only">Cari mata kuliah</span><input type="search" value={query} placeholder="Cari nama atau kode mata kuliah…" onChange={(event) => setQuery(event.target.value)} /></label>
-      <div className="subject-list">{subjects.filter(matches).map((course) => <label className="subject-row" key={course.code}>
-        <input type="checkbox" checked={codes.includes(course.code)} disabled={selected.some((item) => item.code === course.code)}
-          onChange={(event) => setCodes(event.target.checked ? [...codes, course.code] : codes.filter((code) => code !== course.code))} />
-        <span>{course.name}</span><small>{course.credits} SKS</small>
-      </label>)}</div>
-      {!subjects.some(matches) && <p>Nama atau kode ini tidak ditemukan dalam katalog.</p>}
+      <SubjectPicker courses={courses} codes={codes} onChange={onDraftChange} locked={selected.map((course) => course.code)} />
     </section> : <>
       <div className="planner-toolbar paper">
         <div><strong>{credits(selected)} SKS</strong><span>{selected.length} / {codes.length} mata kuliah terjadwal</span></div>
@@ -102,6 +104,7 @@ export function Planner({ plan, workspace }: { plan: Plan; workspace: Workspace 
             {classTab === id && <>
               <label className="class-search"><span className="sr-only">Cari kelas</span><input type="search" value={query} placeholder="Cari mata kuliah atau dosen…" onChange={(event) => setQuery(event.target.value)} /></label>
               {!tabCourses.length && <p className="empty">{query.trim() ? 'Tidak ada kelas yang cocok dengan pencarian.' : emptyMessage[id]}</p>}
+              <div className={id === 'available' ? 'class-options-grid' : undefined}>
               {tabCourses.map((course) => <div className="class-option" key={course.id}>
                 <div><strong>{course.name}</strong><small>{course.className} · {course.credits} SKS</small></div>
                 <div><span>{course.schedule.day} {time(course)}</span><small>{course.classRoom}</small></div>
@@ -112,6 +115,7 @@ export function Planner({ plan, workspace }: { plan: Plan; workspace: Workspace 
                     {id === 'selected' ? 'Batal pilih' : 'Pilih kelas'}<span className="sr-only"> {course.name} {course.className}</span>
                   </button>}
               </div>)}
+              </div>
             </>}
           </div>)}
         </section>

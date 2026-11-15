@@ -9,6 +9,8 @@ import { addCourse, calculatePlanData } from '../../business/use-cases/plan/addC
 import { removeCourse } from '../../business/use-cases/plan/removeCourse'
 import { deleteDataSource } from '../../business/use-cases/datasource/deleteDataSource'
 import { parseSubjects } from '../../business/use-cases/parser'
+import { createView } from '../../business/use-cases/view/createView'
+import { getViews, getResolvedView } from '../../business/use-cases/view/getView'
 
 export function useWorkspace() {
   const [, refresh] = useReducer((revision: number) => revision + 1, 0)
@@ -19,6 +21,13 @@ export function useWorkspace() {
   }
   return {
     plans: getPlans(),
+    views: getViews(),
+    view: getResolvedView,
+    createView: (name: string, planIds: string[]) => change(() => {
+      const result = createView({ name, planIds })
+      if (!result.view) throw new Error(result.error)
+      return result.view
+    }),
     sources: getDataSources(),
     source: getDataSource,
     preview: parseSubjects,
