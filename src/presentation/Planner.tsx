@@ -1,531 +1,177 @@
-import { useMemo, useState } from "react";
-import type { Course } from "../business/types/course.types";
-import type { Plan } from "../business/types/plan.types";
-import { Calendar, Dialog, ErrorText } from "./components";
-import type { Workspace } from "./hooks/useWorkspace";
-import { SubjectPicker } from "./components/SubjectPicker";
-import type { Schedule } from "../business/types/scedule.types";
+import { useState } from 'react'
+import type { Schedule } from '../business/types/scedule.types'
+import type { Plan } from '../business/types/plan.types'
+import { Calendar, ErrorText } from './components'
+import { credits, days, time } from './components/schedule-utils'
+import type { Workspace } from './hooks/useWorkspace'
+import { SubjectPicker } from './components/SubjectPicker'
+import { ScheduleAssistant } from './components/ScheduleAssistant'
 
 const classTabs = [
-  { id: "selected", label: "Jadwal terpilih" },
-  { id: "available", label: "Pilih jadwal" },
-  { id: "blocked", label: "Jadwal bentrok" },
-] as const;
+  { id: 'selected', label: 'Kelas terpilih' },
+  { id: 'available', label: 'Pilih kelas' },
+  { id: 'blocked', label: 'Kelas bentrok' },
+] as const
 
-type ClassTab = (typeof classTabs)[number]["id"];
+type GroupBy = 'none' | 'lecturer' | 'subject' | 'day'
 
-const emptyMessage: Record<ClassTab, string> = {
-  selected: "Belum ada jadwal pada rencana ini.",
-  available: "Tidak ada jadwal tambahan yang bisa dipilih.",
-  blocked: "Belum ada bentrok pada pilihan ini.",
-};
+function groupClasses(courses: Schedule[], groupBy: GroupBy) {
+  if (groupBy === 'none') return [{ key: '', title: '', courses }]
 
-type GroupBy = "none" | "lecturer" | "subject" | "day";
-
-type ClassGroup = { key: string; title: string; items: Schedule[] };
-
-const dayOrder = new Map(
-  ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"].map(
-    (day, index) => [day, index],
-  ),
-);
-
-const totalCredits = (items: Schedule[]) =>
-  items.reduce((sum, item) => sum + item.course.credits, 0);
-
-const timeRange = (item: Schedule) =>
-  `${item.intervalTime.start}–${item.intervalTime.end}`;
-
-function groupClasses(items: Schedule[], groupBy: GroupBy): ClassGroup[] {
-  if (groupBy === "none") return [{ key: "", title: "", items }];
-
-  const groups = new Map<string, ClassGroup>();
-  for (const item of items) {
-    let labels: [string, string][];
-    if (groupBy === "lecturer") {
-      const names = [
-        ...new Set(item.lecturers.map((name) => name.trim()).filter(Boolean)),
-      ];
-      labels = (names.length ? names : ["Dosen belum tercantum"]).map(
-        (name) => [name, name],
-      );
-    } else if (groupBy === "subject") {
-      labels = [
-        [item.course.code, `${item.course.name} · ${item.course.code}`],
-      ];
-    } else {
-      labels = [[item.day, item.day]];
-    }
+  const groups = new Map<string, { key: string; title: string; courses: Schedule[] }>()
+  for (const course of courses) {
+    const names = [...new Set(course.lecturers.map((name) => name.trim()).filter(Boolean))]
+    const labels = groupBy === 'lecturer'
+      ? (names.length ? names : ['Dosen belum tercantum']).map((name) => [name, name])
+      : groupBy === 'subject'
+        ? [[course.course.code, `${course.course.name} · ${course.course.code}`]]
+        : [[course.day, course.day]]
 
     for (const [key, title] of labels) {
-      const group = groups.get(key) ?? { key, title, items: [] };
-      group.items.push(item);
-      groups.set(key, group);
+      const group = groups.get(key) ?? { key, title, courses: [] }
+      group.courses.push(course)
+      groups.set(key, group)
     }
   }
 
+  const dayOrder = new Map(days.map((day, index) => [day, index]))
   return [...groups.values()].sort((a, b) => {
-    if (groupBy === "day") {
-      return (
-        (dayOrder.get(a.key) ?? dayOrder.size) -
-        (dayOrder.get(b.key) ?? dayOrder.size)
-      );
+    if (groupBy === 'day') {
+      return (dayOrder.get(a.key) ?? days.length) - (dayOrder.get(b.key) ?? days.length)
     }
-    return a.title.localeCompare(b.title, "id", { numeric: true });
-  });
+    return a.title.localeCompare(b.title, 'id', { numeric: true })
+  })
 }
 
-export function Planner({
-  plan,
-  workspace,
-  draftCodes,
-  onDraftChange,
-}: {
-  plan: Plan;
-  workspace: Workspace;
-  draftCodes?: string[];
-  onDraftChange: (codes: string[]) => void;
+export function Planner({ plan, workspace }: {
+  plan: Plan
+  workspace: Workspace
 }) {
-  const source = workspace.source(plan.datasourceId ?? "");
-  const schedules = useMemo<Schedule[]>(
-    () => source?.schedules ?? [],
-    [source],
-  );
-
-  // Course unik dari seluruh schedule (satu course bisa punya banyak kelas)
-  const courses = useMemo<Course[]>(() => {
-    const byId = new Map<number, Course>();
-    for (const schedule of schedules) {
-      if (!byId.has(schedule.course.id)) {
-        byId.set(schedule.course.id, schedule.course);
-      }
-    }
-    return [...byId.values()];
-  }, [schedules]);
-
-  const chosenIds = plan.data?.choosed ?? [];
-  const selected = schedules.filter((item) => chosenIds.includes(item.id));
-  const selectedCodes = new Set(selected.map((item) => item.course.code));
-
-  // Kode course yang dipilih user = draft/plan + course dari kelas yang sudah dipilih
-  const codes = [
-    ...new Set([
-      ...(draftCodes ?? plan.choosedCourses ?? []),
-      ...selectedCodes,
-    ]),
-  ];
-
-  const [editing, setEditing] = useState(
-    !draftCodes?.length && !plan.choosedCourses?.length && !chosenIds.length,
-  );
-  const [query, setQuery] = useState("");
-  const [limit, setLimit] = useState("");
-  const [error, setError] = useState("");
-  const [ai, setAi] = useState(false);
-  const [aiPrompt, setAiPrompt] = useState("");
-  const [aiReasoning, setAiReasoning] = useState("");
-  const [aiLoading, setAiLoading] = useState(false);
-  const [classTab, setClassTab] = useState<ClassTab>("available");
-  const [groupBy, setGroupBy] = useState<GroupBy>("none");
-
-  // Semua kelas (schedule) dari course yang dipilih
-  const choices = schedules.filter((item) => codes.includes(item.course.code));
-  const availability = workspace.availability(
-    choices,
-    selected.map((item) => item.id),
-  );
-
-  const matches = (item: Schedule) =>
-    `${item.course.name} ${item.course.code} ${item.className} ${item.day} ${item.lecturers.join(" ")}`
-      .toLowerCase()
-      .includes(query.trim().toLowerCase());
-
-  const ready = choices.filter(
-    (item) =>
-      availability.available.includes(item.id) &&
-      !selectedCodes.has(item.course.code) &&
-      matches(item),
-  );
-  const blocked = choices.filter(
-    (item) =>
-      availability.unavailable.some(
-        (option) =>
-          option.id === item.id &&
-          option.reason.some((reason) => reason.startsWith("Bentrok")),
-      ) &&
-      !selectedCodes.has(item.course.code) &&
-      matches(item),
-  );
-  const selectedMatches = selected.filter(matches);
-
-  const classCounts: Record<ClassTab, number> = {
-    selected: selectedMatches.length,
-    available: ready.length,
-    blocked: blocked.length,
-  };
-  const tabItems =
-    classTab === "selected"
-      ? selectedMatches
-      : classTab === "available"
-        ? ready
-        : blocked;
-
+  const source = workspace.source(plan.datasourceId ?? '')
+  const courses = source?.schedules ?? []
+  const [editing, setEditing] = useState(!plan.choosedCourses?.length && !plan.data?.choosed.length)
+  const codes = [...new Set([
+    ...(plan.choosedCourses ?? []),
+    ...courses.filter((course) => plan.data?.choosed.includes(course.id)).map((course) => course.course.code),
+  ])]
+  const [query, setQuery] = useState('')
+  const [limit, setLimit] = useState('')
+  const [error, setError] = useState('')
+  const [ai, setAi] = useState(false)
+  const [classTab, setClassTab] = useState<(typeof classTabs)[number]['id']>('available')
+  const [groupBy, setGroupBy] = useState<GroupBy>('none')
+  const selected = courses.filter((course) => plan.data?.choosed.includes(course.id))
+  const choices = courses.filter((course) => codes.includes(course.course.code))
+  const availability = workspace.availability(choices, selected.map((course) => course.id))
+  const matches = (course: Schedule) => `${course.course.name} ${course.course.code} ${course.className} ${course.day} ${course.lecturers.join(' ')}`.toLowerCase().includes(query.trim().toLowerCase())
+  const ready = choices.filter((course) => availability.available.includes(course.id) && matches(course))
+  const blocked = choices.filter((course) => availability.unavailable.some((option) => option.id === course.id && option.reason.some((reason) => reason.startsWith('Bentrok'))) && !selected.some((item) => item.course.code === course.course.code) && matches(course))
+  const classCounts = { selected: selected.filter(matches).length, available: ready.length, blocked: blocked.length }
+  const tabCourses = classTab === 'selected' ? selected.filter(matches) : classTab === 'available' ? ready : blocked
+  const emptyMessage = {
+    selected: 'Belum ada kelas pada rencana ini.',
+    available: 'Tidak ada kelas tambahan yang bisa dipilih.',
+    blocked: 'Belum ada bentrok pada pilihan ini.',
+  }
   function act(action: () => void) {
-    setError("");
-    try {
-      action();
-    } catch (problem) {
-      setError((problem as Error).message);
-    }
+    setError('')
+    try { action() } catch (problem) { setError((problem as Error).message) }
   }
-
-  function pick(item: Schedule, remove = false) {
+  function pick(course: Schedule, remove = false) {
     act(() => {
-      workspace.pick(plan.id, item.id, remove);
-    });
+      workspace.pick(plan.id, course.id, remove)
+      if (remove) workspace.updatePlanCourses(plan.id, codes)
+    })
   }
+  if (!source) return <div className="empty paper"><h1>{plan.name}</h1><p>Sumber jadwal untuk rencana ini tidak tersedia.</p><a href="#/">Kembali ke rencana KRS</a></div>
+  if (!courses.length) return <div className="empty paper"><h1>{plan.name}</h1><p>Daftar kelas sumber ini tidak tersedia. Impor ulang jadwal dan buat rencana dari sumber baru.</p><a href="#/data">Buka Data Jadwal</a></div>
 
-  if (!source) {
-    return (
-      <div className="empty paper">
-        <h1>{plan.name}</h1>
-        <p>Sumber jadwal untuk rencana ini tidak tersedia.</p>
-        <a href="#/">Kembali ke rencana KRS</a>
+  return <div className="planner">
+    <a className="back" href="#/">‹ Rencana KRS</a>
+    <header className="page-heading"><div><h1>{plan.name}</h1><p>Sumber jadwal: {source.name}</p><p>Pilih kelas yang tersedia di bawah kalender. Kelas yang dipilih langsung masuk ke jadwal.</p></div>
+      <div className="button-row">
+        <button className="secondary" onClick={() => act(() => {
+          const next = workspace.duplicatePlan(plan.id)
+          location.hash = `/plan/${next.id}`
+        })}>Duplikasi</button>
       </div>
-    );
-  }
-
-  return (
-    <div className="planner">
-      <a className="back" href="#/">
-        ‹ Rencana KRS
-      </a>
-      <header className="page-heading">
-        <div>
-          <h1>{plan.name}</h1>
-          <p>{source.name}</p>
-        </div>
-        <div className="button-row">
-          <button
-            className="secondary"
-            onClick={() => {
-              act(() => {
-                const next = workspace.duplicatePlan(plan.id);
-                location.hash = `#/plan/${encodeURIComponent(next.id)}`;
-              });
-            }}
-          >
-            Duplikasi
-          </button>
-        </div>
-      </header>
-      <ErrorText message={error} />
-
-      {editing ? (
-        <section className="paper select-subjects">
-          <div className="section-heading">
-            <button
-              className="primary"
-              disabled={!codes.length}
-              onClick={() => {
-                setQuery("");
-                setEditing(false);
-                setClassTab("available");
-              }}
-            >
-              Lanjut pilih jadwal
-            </button>
-          </div>
-          <SubjectPicker
-            courses={courses}
-            codes={codes}
-            onChange={onDraftChange}
-            locked={[...selectedCodes]}
-          />
+    </header>
+    <ErrorText message={error} />
+    {editing ? <section className="paper select-subjects">
+      <div className="section-heading">
+        <button className="primary" disabled={!codes.length} onClick={() => act(() => {
+          setQuery(''); setEditing(false); setClassTab('available')
+        })}>Lanjut pilih kelas</button></div>
+      <SubjectPicker courses={courses.map((schedule) => schedule.course)} codes={codes}
+        onChange={(next) => act(() => workspace.updatePlanCourses(plan.id, next))}
+        locked={selected.map((course) => course.course.code)} />
+    </section> : <>
+      <div className="planner-toolbar paper">
+        <div><strong>{credits(selected)} SKS</strong><span>{selected.length} / {codes.length} mata kuliah terjadwal</span></div>
+        <label className="limit">Batas SKS<input type="number" min="1" max="99" value={limit} placeholder="Opsional" onChange={(event) => setLimit(event.target.value)} /></label>
+        <div className="button-row"><button className="secondary" onClick={() => { setQuery(''); setEditing(true) }}>Ubah mata kuliah</button>
+          <button className="primary" onClick={() => setAi(true)}>Susun jadwal dengan AI</button></div>
+      </div>
+      {limit && credits(selected) > Number(limit) && <p className="notice" role="status">Total melebihi batas {limit} SKS.</p>}
+        <section className="calendar-panel" aria-labelledby="calendar-title">
+          <div className="section-heading"><h2 id="calendar-title">Kalender mingguan</h2><small>Perubahan tersimpan otomatis</small></div>
+          {!selected.length && <p className="notice">Pilih kelas untuk mengisi kalender.</p>}
+          <Calendar courses={selected} onRemove={(course) => pick(course, true)} />
         </section>
-      ) : (
-        <>
-          <div className="planner-toolbar paper">
-            <div>
-              <strong>{totalCredits(selected)} SKS</strong>
-              <span>
-                {selectedCodes.size} / {codes.length} mata kuliah terjadwal
-              </span>
-            </div>
-            <label className="limit">
-              Batas SKS
-              <input
-                type="number"
-                min="1"
-                max="99"
-                value={limit}
-                placeholder="Opsional"
-                onChange={(event) => {
-                  setLimit(event.target.value);
-                }}
-              />
-            </label>
-            <div className="button-row">
-              <button
-                className="secondary"
-                onClick={() => {
-                  setQuery("");
-                  setEditing(true);
-                }}
-              >
-                Ubah mata kuliah
-              </button>
-              <button
-                className="secondary"
-                onClick={() => {
-                  setAi(true);
-                }}
-              >
-                Asisten AI
-              </button>
-            </div>
+        <section className="class-section" aria-label="Daftar kelas">
+          <div className="class-tabs" role="tablist" aria-label="Status kelas">
+            {classTabs.map(({ id, label }, index) => <button key={id} type="button" role="tab"
+              id={`class-tab-${id}`} aria-controls={`class-panel-${id}`}
+              aria-selected={classTab === id} tabIndex={classTab === id ? 0 : -1}
+              onClick={() => setClassTab(id)}
+              onKeyDown={(event) => {
+                const last = classTabs.length - 1
+                const next = { ArrowRight: (index + 1) % classTabs.length, ArrowLeft: (index + last) % classTabs.length, Home: 0, End: last }
+                if (!Object.hasOwn(next, event.key)) return
+                event.preventDefault()
+                const tab = classTabs[next[event.key as keyof typeof next]]
+                setClassTab(tab.id)
+                document.getElementById(`class-tab-${tab.id}`)?.focus()
+              }}>
+              {label} <span className="count">{classCounts[id]}</span>
+            </button>)}
           </div>
-
-          {limit && totalCredits(selected) > Number(limit) && (
-            <p className="notice" role="status">
-              Total melebihi batas {limit} SKS.
-            </p>
-          )}
-
-          <section className="calendar-panel" aria-labelledby="calendar-title">
-            <div className="section-heading">
-              <h2 id="calendar-title">Kalender mingguan</h2>
-              <small>Perubahan tersimpan otomatis</small>
-            </div>
-            {!selected.length && (
-              <p className="notice">Pilih jadwal untuk mengisi kalender.</p>
-            )}
-            <Calendar
-              schedules={selected}
-              onRemove={(item) => {
-                pick(item, true);
-              }}
-            />
-          </section>
-
-          <section className="class-section" aria-label="Daftar jadwal">
-            <div
-              className="class-tabs"
-              role="tablist"
-              aria-label="Status jadwal"
-            >
-              {classTabs.map(({ id, label }, index) => (
-                <button
-                  key={id}
-                  type="button"
-                  role="tab"
-                  id={`class-tab-${id}`}
-                  aria-controls={`class-panel-${id}`}
-                  aria-selected={classTab === id}
-                  tabIndex={classTab === id ? 0 : -1}
-                  onClick={() => {
-                    setClassTab(id);
-                  }}
-                  onKeyDown={(event) => {
-                    const last = classTabs.length - 1;
-                    const next = {
-                      ArrowRight: (index + 1) % classTabs.length,
-                      ArrowLeft: (index + last) % classTabs.length,
-                      Home: 0,
-                      End: last,
-                    };
-                    if (!Object.hasOwn(next, event.key)) return;
-                    event.preventDefault();
-                    const tab = classTabs[next[event.key as keyof typeof next]];
-                    setClassTab(tab.id);
-                    document.getElementById(`class-tab-${tab.id}`)?.focus();
-                  }}
-                >
-                  {label} <span className="count">{classCounts[id]}</span>
-                </button>
-              ))}
-            </div>
-
-            {classTabs.map(({ id }) => (
-              <div
-                key={id}
-                className="class-panel paper"
-                role="tabpanel"
-                id={`class-panel-${id}`}
-                aria-labelledby={`class-tab-${id}`}
-                hidden={classTab !== id}
-              >
-                {classTab === id && (
-                  <>
-                    <div className="class-filters">
-                      <label className="class-search">
-                        <span className="sr-only">Cari jadwal</span>
-                        <input
-                          type="search"
-                          value={query}
-                          placeholder="Cari mata kuliah, dosen, atau hari…"
-                          onChange={(event) => {
-                            setQuery(event.target.value);
-                          }}
-                        />
-                      </label>
-                      <label>
-                        Kelompokkan berdasarkan
-                        <select
-                          value={groupBy}
-                          onChange={(event) => {
-                            setGroupBy(event.target.value as GroupBy);
-                          }}
-                        >
-                          <option value="none">Tanpa pengelompokan</option>
-                          <option value="lecturer">Dosen</option>
-                          <option value="subject">Mata kuliah</option>
-                          <option value="day">Hari</option>
-                        </select>
-                      </label>
-                    </div>
-
-                    {!tabItems.length && (
-                      <p className="empty">
-                        {query.trim()
-                          ? "Tidak ada jadwal yang cocok dengan pencarian."
-                          : emptyMessage[id]}
-                      </p>
-                    )}
-
-                    {groupClasses(tabItems, groupBy).map((group) => (
-                      <div className="class-group" key={group.key}>
-                        {group.title && (
-                          <h3>
-                            {group.title}{" "}
-                            <span className="count">{group.items.length}</span>
-                          </h3>
-                        )}
-                        <div
-                          className={
-                            id === "available"
-                              ? "class-options-grid"
-                              : undefined
-                          }
-                        >
-                          {group.items.map((item) => (
-                            <div className="class-option" key={item.id}>
-                              <div>
-                                <strong>{item.course.name}</strong>
-                                <small>
-                                  {item.className} · {item.course.credits} SKS
-                                </small>
-                              </div>
-                              <div>
-                                <span>
-                                  {item.day} {timeRange(item)}
-                                </span>
-                                <small>{item.classRoom}</small>
-                              </div>
-                              <div className="class-lecturers">
-                                {item.lecturers.map((name) => (
-                                  <small key={name}>{name}</small>
-                                ))}
-                              </div>
-                              {id === "blocked" ? (
-                                <small className="danger-text class-reason">
-                                  {availability.unavailable
-                                    .find((entry) => entry.id === item.id)
-                                    ?.reason.join(" · ")}
-                                </small>
-                              ) : (
-                                <button
-                                  className={
-                                    id === "selected"
-                                      ? "quiet danger-text"
-                                      : "secondary"
-                                  }
-                                  onClick={() => {
-                                    pick(item, id === "selected");
-                                  }}
-                                >
-                                  {id === "selected"
-                                    ? "Batal pilih"
-                                    : "Pilih jadwal"}
-                                  <span className="sr-only">
-                                    {" "}
-                                    {item.course.name} {item.className}
-                                  </span>
-                                </button>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </>
-                )}
+          {classTabs.map(({ id }) => <div key={id} className="class-panel paper" role="tabpanel"
+            id={`class-panel-${id}`} aria-labelledby={`class-tab-${id}`} hidden={classTab !== id}>
+            {classTab === id && <>
+              <div className="class-filters">
+                <label className="class-search">Cari kelas<input type="search" value={query} placeholder="Mata kuliah, dosen, atau hari" onChange={(event) => setQuery(event.target.value)} /></label>
+                <label>Kelompokkan berdasarkan<select value={groupBy} onChange={(event) => setGroupBy(event.target.value as GroupBy)}>
+                  <option value="none">Tanpa pengelompokan</option>
+                  <option value="lecturer">Dosen</option>
+                  <option value="subject">Mata kuliah</option>
+                  <option value="day">Hari</option>
+                </select></label>
               </div>
-            ))}
-          </section>
-        </>
-      )}
-
-      {ai && (
-        <Dialog
-          title="Asisten jadwal"
-          wide
-          onClose={() => {
-            if (!aiLoading) setAi(false);
-          }}
-        >
-          <form
-            onSubmit={async (event) => {
-              event.preventDefault();
-              setError("");
-              setAiReasoning("");
-              setAiLoading(true);
-              try {
-                const result = await workspace.generatePlanWithAI(
-                  plan.id,
-                  aiPrompt,
-                );
-                setAiReasoning(result.reasoning ?? "Jadwal berhasil dibuat.");
-              } catch (problem) {
-                setError((problem as Error).message);
-              } finally {
-                setAiLoading(false);
-              }
-            }}
-          >
-            <label>
-              Preferensi jadwal
-              <textarea
-                required
-                rows={5}
-                value={aiPrompt}
-                placeholder="Contoh: pilih jadwal tanpa kuliah pagi dan sisakan hari Jumat kosong."
-                onChange={(event) => {
-                  setAiPrompt(event.target.value);
-                }}
-                disabled={aiLoading}
-              />
-            </label>
-            {aiReasoning && <p className="notice">{aiReasoning}</p>}
-            <ErrorText message={error} />
-            <footer className="actions">
-              <button
-                type="button"
-                className="secondary"
-                onClick={() => {
-                  setAi(false);
-                }}
-                disabled={aiLoading}
-              >
-                Tutup
-              </button>
-              <button className="primary" disabled={aiLoading}>
-                {aiLoading ? "Menyusun jadwal…" : "Buat jadwal"}
-              </button>
-            </footer>
-          </form>
-        </Dialog>
-      )}
-    </div>
-  );
+              {!tabCourses.length && <p className="empty">{query.trim() ? 'Tidak ada kelas yang cocok dengan pencarian.' : emptyMessage[id]}</p>}
+              {tabCourses.length > 0 && groupClasses(tabCourses, groupBy).map((group) => {
+              const cards = <div className={id === 'available' || groupBy !== 'none' ? 'class-options-grid' : undefined}>
+              {group.courses.map((course) => <div className="class-option" key={course.id}>
+                <div><strong>{course.course.name}</strong><small>{course.className} · {course.course.credits} SKS</small></div>
+                <div><span>{course.day} {time(course)}</span><small>{course.classRoom}</small></div>
+                <div className="class-lecturers">{course.lecturers.map((name) => <small key={name}>{name}</small>)}</div>
+                {id === 'blocked'
+                  ? <small className="danger-text class-reason">{availability.unavailable.find((entry) => entry.id === course.id)?.reason.join(' · ')}</small>
+                  : <button className={id === 'selected' ? 'quiet danger-text' : 'primary'} onClick={() => pick(course, id === 'selected')}>
+                    {id === 'selected' ? 'Batal pilih' : 'Pilih kelas'}<span className="sr-only"> {course.course.name} {course.className}</span>
+                  </button>}
+              </div>)}
+              </div>
+              return groupBy === 'none' ? <div key={group.key}>{cards}</div> : <details className="class-group" key={`${groupBy}-${group.key}`}>
+                <summary><span>{group.title}</span><span className="count">{group.courses.length} kelas</span></summary>
+                <div className="class-group-content">{cards}</div>
+              </details>
+              })}
+            </>}
+          </div>)}
+        </section>
+    </>}
+    {ai && <ScheduleAssistant onClose={() => setAi(false)} replacesSchedule={selected.length > 0}
+      onGenerate={(prompt) => workspace.generatePlanWithAI(plan.id, prompt)} />}
+  </div>
 }

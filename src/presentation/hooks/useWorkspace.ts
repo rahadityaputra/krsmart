@@ -6,6 +6,7 @@ import { duplicatePlan } from '../../business/use-cases/plan/duplicatePlan'
 import { deleteDataSource } from '../../business/use-cases/datasource/deleteDataSource'
 import { parseSubjects } from '../../business/use-cases/parser'
 import { createView } from '../../business/use-cases/view/createView'
+import { deleteView } from '../../business/use-cases/view/deleteView'
 import { getViews, getResolvedView } from '../../business/use-cases/view/getView'
 import { addSchedule, calculatePlanData } from '../../business/use-cases/plan/addSchedule'
 import { createDataSource } from '../../business/use-cases/datasource/createDataSource'
@@ -13,6 +14,13 @@ import { createPlan } from '../../business/use-cases/plan/createPlan'
 import { removeSchedule } from '../../business/use-cases/plan/removeSchedule'
 import { updatePlan } from '../../data/repository/planRepository'
 import { generatePlanWithAI } from '../../container'
+
+function readSource(id: string) {
+  const source = getDataSource(id);
+  if (!source) return null;
+  // Katalog yang tersimpan sebelum perubahan format dapat belum memiliki schedules.
+  return { ...source, schedules: Array.isArray(source.schedules) ? source.schedules : [] };
+}
 
 export function useWorkspace() {
   const [, refresh] = useReducer((revision: number) => revision + 1, 0);
@@ -25,13 +33,17 @@ export function useWorkspace() {
     plans: getPlans(),
     views: getViews(),
     view: getResolvedView,
+    deleteView: (id: string) => change(() => {
+      const result = deleteView(id)
+      if (!result.success) throw new Error(result.error)
+    }),
     createView: (name: string, planIds: string[]) => change(() => {
       const result = createView({ name, planIds })
       if (!result.view) throw new Error(result.error)
       return result.view
     }),
     sources: getDataSources(),
-    source: getDataSource,
+    source: readSource,
     preview: parseSubjects,
     availability: calculatePlanData,
     saveSource: (name: string, raw: string) =>
@@ -52,7 +64,7 @@ export function useWorkspace() {
     },
     createPlan: (name: string, datasourceId: string, courseCodes: string[] = []) =>
       change(() => {
-        if (!getDataSource(datasourceId))
+        if (!readSource(datasourceId)?.schedules.length)
           throw new Error("Pilih sumber data jadwal.");
         const result = createPlan({ name, datasourceId, courseCodes });
         if (!result.plan) throw new Error(result.error);
@@ -68,7 +80,7 @@ export function useWorkspace() {
       const plan = getPlans().find((item) => item.id === planId);
       if (!plan?.datasourceId) throw new Error("Plan belum terhubung ke sumber data.");
 
-      const sourceSchedules = getDataSource(plan.datasourceId)?.schedules ?? [];
+      const sourceSchedules = readSource(plan.datasourceId)?.schedules ?? [];
       const courseCodes = plan.choosedCourses ?? [];
       const schedules = sourceSchedules.filter((schedule) =>
         courseCodes.includes(schedule.course.code),
@@ -79,22 +91,32 @@ export function useWorkspace() {
         throw new Error(detail ? `${result.error} ${detail}` : result.error);
       }
 
-      const currentIds = new Set(plan.data?.choosed ?? []);
+      const latestPlan = getPlans().find((item) => item.id === planId);
+      if (!latestPlan || latestPlan.updatedAt !== plan.updatedAt) {
+        throw new Error("Rencana berubah selama AI bekerja. Buat jadwal ulang.");
+      }
+      const currentIds = new Set(latestPlan.data?.choosed ?? []);
       const generatedIds = new Set(result.schedules.map((schedule) => schedule.id));
-      for (const scheduleId of currentIds) {
-        if (!generatedIds.has(scheduleId)) {
-          const removed = removeSchedule({ planId, scheduleId });
-          if (!removed.success) throw new Error(removed.error);
+      try {
+        for (const scheduleId of currentIds) {
+          if (!generatedIds.has(scheduleId)) {
+            const removed = removeSchedule({ planId, scheduleId });
+            if (!removed.success) throw new Error(removed.error);
+          }
         }
-      }
-      for (const schedule of result.schedules) {
-        if (!currentIds.has(schedule.id)) {
-          const added = addSchedule({ planId, scheduleId: schedule.id });
-          if (!added.success) throw new Error(added.error);
+        for (const schedule of result.schedules) {
+          if (!currentIds.has(schedule.id)) {
+            const added = addSchedule({ planId, scheduleId: schedule.id });
+            if (!added.success) throw new Error(added.error);
+          }
         }
+        if (!updatePlan(planId, { choosedCourses: courseCodes })) {
+          throw new Error("Pilihan mata kuliah gagal disimpan.");
+        }
+        return result;
+      } finally {
+        refresh();
       }
-      refresh();
-      return result;
     },
     duplicatePlan: (id: string) =>
       change(() => {
