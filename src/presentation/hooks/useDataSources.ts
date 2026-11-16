@@ -1,16 +1,20 @@
-import { useReducer } from 'react'
-import { getDataSource, getDataSources } from '../../business/use-cases/datasource/getDataSource'
-import { getPlans } from '../../business/use-cases/plan/getPlan'
-import { deleteDataSource } from '../../business/use-cases/datasource/deleteDataSource'
-import { parseSubjects } from '../../business/use-cases/parser'
-import { createDataSource } from '../../business/use-cases/datasource/createDataSource'
+import { useReducer } from "react";
+import {
+  getDataSource,
+  getDataSources,
+} from "../../business/use-cases/datasource/getDataSource";
+import { getPlans } from "../../business/use-cases/plan/getPlan";
+import { deleteDataSource } from "../../business/use-cases/datasource/deleteDataSource";
+import { parseSubjects } from "../../business/use-cases/parser";
+import { createDataSource } from "../../business/use-cases/datasource/createDataSource";
 export function readSource(id: string) {
   const source = getDataSource(id);
   if (!source) return null;
-  // Katalog yang tersimpan sebelum perubahan format dapat belum memiliki schedules.
-  return { ...source, schedules: Array.isArray(source.schedules) ? source.schedules : [] };
+  return {
+    ...source,
+    schedules: Array.isArray(source.schedules) ? source.schedules : [],
+  };
 }
-
 
 export function useDataSources() {
   const [, refresh] = useReducer((revision: number) => revision + 1, 0);
@@ -39,7 +43,7 @@ export function useDataSources() {
         if (!result.success) throw new Error(result.error);
       });
     },
-  }
+  };
 }
 
-export type DataSources = ReturnType<typeof useDataSources>
+export type DataSources = ReturnType<typeof useDataSources>;

@@ -14,12 +14,6 @@ export interface createPlanResult {
   error?: string;
 }
 
-/**
- * Use case: Buat plan baru.
- *
- * Validasi:
- * - Nama plan tidak boleh kosong.
- */
 export const createPlan = (input: createPlanInput): createPlanResult => {
   const name = input.name.trim();
   if (!name) {

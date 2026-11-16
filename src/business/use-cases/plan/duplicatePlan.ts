@@ -10,12 +10,6 @@ export interface DuplicatePlanResult {
   error?: string;
 }
 
-/**
- * Use case: Duplikasi plan yang sudah ada.
- *
- * Membuat plan baru dengan nama "[nama asli] (copy)" dan
- * menyalin datasourceId, choosedCourses, serta data dari plan asli.
- */
 export const duplicatePlan = (id: string): DuplicatePlanResult => {
   const original = getPlanById(id);
   if (!original) {

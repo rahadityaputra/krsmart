@@ -10,9 +10,7 @@ import {
 
 export interface ImportPlanResult {
   success: boolean;
-  /** Plan baru yang siap disimpan (id baru, datasourceId = tujuan). */
   plan?: Plan;
-  /** Jadwal di file yang tidak ditemukan di data source tujuan. */
   missing?: { code: string; name: string; className: string }[];
   warnings?: string[];
   error?: string;
@@ -61,17 +59,6 @@ const newPlanId = (): string =>
     ? crypto.randomUUID()
     : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
-/**
- * Use case: Import isi file .krs, cocokkan dengan data source tujuan,
- * lalu hasilkan objek Plan baru.
- *
- * Fungsi ini murni (tidak menyimpan apa pun). Pemanggil menyimpan
- * `result.plan` lewat repository/workspace.
- *
- * @param content       isi file .krs (string JSON)
- * @param source        data source tujuan
- * @param datasourceId  id data source tujuan (disimpan ke Plan.datasourceId)
- */
 export const importPlan = (
   content: string,
   source: PlanSource | undefined,
@@ -128,7 +115,6 @@ export const importPlan = (
     }
   }
 
-  // Hanya simpan kode MK yang ada di data source tujuan
   const choosedCourses = parsed.plan.courses.filter((code) =>
     knownCodes.has(code),
   );
@@ -162,5 +148,4 @@ export const importPlan = (
   return { success: true, plan, missing, warnings };
 };
 
-/** Helper browser: baca File dari <input type="file" accept=".krs"> */
 export const readKrsFile = (file: File): Promise<string> => file.text();

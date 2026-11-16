@@ -13,22 +13,14 @@ export interface CreateViewResult {
   error?: string;
 }
 
-/**
- * Use case: Buat view baru.
- *
- * Validasi:
- * - Nama view tidak boleh kosong.
- * - Jika planIds diberikan, semua plan harus ada (yang tidak valid diabaikan).
- */
 export const createView = (input: CreateViewInput): CreateViewResult => {
   const name = input.name.trim();
   if (!name) {
     return { success: false, error: "Nama view tidak boleh kosong." };
   }
 
-  // Filter planIds yang valid (ada di storage)
   const validPlanIds = (input.planIds ?? []).filter(
-    (planId) => getPlanById(planId) !== null
+    (planId) => getPlanById(planId) !== null,
   );
 
   const view = repoAddView({ name, planIds: validPlanIds });

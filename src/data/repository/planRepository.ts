@@ -1,8 +1,11 @@
 import type { Plan } from "../../business/types/plan.types";
 import { getItem, removeItem, setItem } from "../storage/localStorage";
 
-export type NewPlan = Pick<Plan, "name"> & Partial<Pick<Plan, "datasourceId" | "choosedCourses" | "data">>;
-export type PlanChanges = Partial<Pick<Plan, "name" | "datasourceId" | "choosedCourses" | "data">>;
+export type NewPlan = Pick<Plan, "name"> &
+  Partial<Pick<Plan, "datasourceId" | "choosedCourses" | "data">>;
+export type PlanChanges = Partial<
+  Pick<Plan, "name" | "datasourceId" | "choosedCourses" | "data">
+>;
 
 const PLANS_KEY = "schedule:plans";
 
@@ -15,14 +18,10 @@ const loadPlans = (): Plan[] => getItem<Plan[]>(PLANS_KEY, []);
 
 const savePlans = (plans: Plan[]): boolean => setItem(PLANS_KEY, plans);
 
-// ---------- Read ----------
-
 export const getAllPlans = (): Plan[] => loadPlans();
 
 export const getPlanById = (id: string): Plan | null =>
   loadPlans().find((plan) => plan.id === id) ?? null;
-
-// ---------- Create ----------
 
 export const addPlan = (input: NewPlan): Plan | null => {
   const now = Date.now();
@@ -30,7 +29,9 @@ export const addPlan = (input: NewPlan): Plan | null => {
     id: generateId(),
     name: input.name.trim(),
     datasourceId: input.datasourceId,
-    choosedCourses: input.choosedCourses ? [...new Set(input.choosedCourses)] : [],
+    choosedCourses: input.choosedCourses
+      ? [...new Set(input.choosedCourses)]
+      : [],
     data: input.data ?? {
       choosed: [],
       available: [],
@@ -51,7 +52,9 @@ export const updatePlan = (id: string, changes: PlanChanges): Plan | null => {
   const updated: Plan = {
     ...target,
     ...(changes.name !== undefined && { name: changes.name.trim() }),
-    ...(changes.datasourceId !== undefined && { datasourceId: changes.datasourceId }),
+    ...(changes.datasourceId !== undefined && {
+      datasourceId: changes.datasourceId,
+    }),
     ...(changes.choosedCourses !== undefined && {
       choosedCourses: [...new Set(changes.choosedCourses)],
     }),
@@ -59,12 +62,18 @@ export const updatePlan = (id: string, changes: PlanChanges): Plan | null => {
     updatedAt: Date.now(),
   };
 
-  const saved = savePlans(plans.map((plan) => (plan.id === id ? updated : plan)));
+  const saved = savePlans(
+    plans.map((plan) => (plan.id === id ? updated : plan)),
+  );
   return saved ? updated : null;
 };
 
-// Helper untuk menambah course id ke plan
-export const addSubjectToPlan = (planId: string, courseId: number, courseCode?: string, planData?: Plan["data"]): Plan | null => {
+export const addSubjectToPlan = (
+  planId: string,
+  courseId: number,
+  courseCode?: string,
+  planData?: Plan["data"],
+): Plan | null => {
   const plan = getPlanById(planId);
   if (!plan) return null;
 
@@ -72,7 +81,9 @@ export const addSubjectToPlan = (planId: string, courseId: number, courseCode?: 
   const currentChoosedCourses = plan.choosedCourses ?? [];
 
   return updatePlan(planId, {
-    choosedCourses: courseCode ? [...new Set([...currentChoosedCourses, courseCode])] : currentChoosedCourses,
+    choosedCourses: courseCode
+      ? [...new Set([...currentChoosedCourses, courseCode])]
+      : currentChoosedCourses,
     data: planData ?? {
       choosed: [...new Set([...currentChoosed, courseId])],
       available: plan.data?.available.filter((id) => id !== courseId) ?? [],
@@ -81,7 +92,12 @@ export const addSubjectToPlan = (planId: string, courseId: number, courseCode?: 
   });
 };
 
-export const removeSubjectFromPlan = (planId: string, courseId: number, courseCode?: string, planData?: Plan["data"]): Plan | null => {
+export const removeSubjectFromPlan = (
+  planId: string,
+  courseId: number,
+  courseCode?: string,
+  planData?: Plan["data"],
+): Plan | null => {
   const plan = getPlanById(planId);
   if (!plan) return null;
 
@@ -89,7 +105,9 @@ export const removeSubjectFromPlan = (planId: string, courseId: number, courseCo
   const currentChoosedCourses = plan.choosedCourses ?? [];
 
   return updatePlan(planId, {
-    choosedCourses: courseCode ? currentChoosedCourses.filter((code) => code !== courseCode) : currentChoosedCourses,
+    choosedCourses: courseCode
+      ? currentChoosedCourses.filter((code) => code !== courseCode)
+      : currentChoosedCourses,
     data: planData ?? {
       choosed: currentChoosed.filter((id) => id !== courseId),
       available: plan.data?.available ?? [],
@@ -97,8 +115,6 @@ export const removeSubjectFromPlan = (planId: string, courseId: number, courseCo
     },
   });
 };
-
-// ---------- Delete ----------
 
 export const removePlan = (id: string): boolean => {
   const plans = loadPlans();

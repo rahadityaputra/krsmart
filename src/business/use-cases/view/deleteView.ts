@@ -5,9 +5,6 @@ export interface DeleteViewResult {
   error?: string;
 }
 
-/**
- * Use case: Hapus view berdasarkan id.
- */
 export const deleteView = (id: string): DeleteViewResult => {
   if (!id.trim()) {
     return { success: false, error: "ID view tidak boleh kosong." };

@@ -15,7 +15,7 @@ export interface ValidationIssue {
 
 export interface ValidationResult {
   valid: boolean;
-  schedules: Schedule[]; // jadwal hasil AI yang lolos, sudah berupa Schedule lengkap
+  schedules: Schedule[];
   issues: ValidationIssue[];
 }
 

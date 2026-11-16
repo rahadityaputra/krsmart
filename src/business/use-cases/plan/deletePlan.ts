@@ -5,9 +5,6 @@ export interface DeletePlanResult {
   error?: string;
 }
 
-/**
- * Use case: Hapus plan berdasarkan id.
- */
 export const deletePlan = (id: string): DeletePlanResult => {
   if (!id.trim()) {
     return { success: false, error: "ID plan tidak boleh kosong." };

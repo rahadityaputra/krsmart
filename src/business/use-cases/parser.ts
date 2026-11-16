@@ -4,23 +4,14 @@ import type { Course } from "../types/course.types";
 type RawCourse = Omit<Course, "id">;
 type RawSchedule = Omit<Schedule, "id" | "course"> & { course: RawCourse };
 
-// Contoh: "Senin 07:00-10:00"
 const TIME_REGEX = /^([A-Za-z]+)\s+(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})$/;
 
 const isIntegerString = (value: string | undefined): boolean =>
   value !== undefined && /^-?\d+$/.test(value);
 
-/**
- * Kolom (dipisah tab):
- * 0 studyProgram | 1 code | 2 name | 3,4 credits/className (urutan bisa tertukar)
- * 5 numberOfStudent | 6 "Hari HH:MM-HH:MM" | 7 classRoom
- *
- * Mengembalikan null kalau baris bukan baris jadwal yang valid.
- */
 const parseScheduleCells = (cells: string[]): RawSchedule | null => {
   if (cells.length < 8) return null;
 
-  // Kolom 3 dan 4 bisa tertukar: yang berupa angka adalah SKS
   let creditIndex = 3;
   let classNameIndex = 4;
   if (!isIntegerString(cells[creditIndex])) {
@@ -50,11 +41,6 @@ const parseScheduleCells = (cells: string[]): RawSchedule | null => {
   };
 };
 
-/**
- * Baris jadwal  : kolom pertama = kode program studi (key)
- * Baris dosen   : kolom pertama BUKAN key, dan menempel ke jadwal terakhir
- * Key diambil dari jadwal valid pertama, jadi header sebelumnya terabaikan.
- */
 const parseLines = (lines: string[]): RawSchedule[] => {
   const schedules: RawSchedule[] = [];
   let key = "";
@@ -78,7 +64,6 @@ const parseLines = (lines: string[]): RawSchedule[] => {
       continue;
     }
 
-    // Baris dosen
     const last = schedules[schedules.length - 1];
     if (first && !last.lecturers.includes(first)) {
       last.lecturers.push(first);
@@ -88,7 +73,6 @@ const parseLines = (lines: string[]): RawSchedule[] => {
   return schedules;
 };
 
-// Beri id Course (unik per kode mata kuliah) dan id Schedule (per baris)
 const assignIds = (rawSchedules: RawSchedule[]): Schedule[] => {
   const coursesByCode = new Map<string, Course>();
 

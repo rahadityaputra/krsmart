@@ -1,17 +1,25 @@
-import { useReducer } from 'react'
-import { getPlans } from '../../business/use-cases/plan/getPlan'
-import { deletePlan } from '../../business/use-cases/plan/deletePlan'
-import { duplicatePlan } from '../../business/use-cases/plan/duplicatePlan'
-import { addSchedule, calculatePlanData } from '../../business/use-cases/plan/addSchedule'
-import { createPlan } from '../../business/use-cases/plan/createPlan'
-import { removeSchedule } from '../../business/use-cases/plan/removeSchedule'
-import { importPlan, readKrsFile } from '../../business/use-cases/plan/importPlan'
-import { downloadKrs, exportPlan } from '../../business/use-cases/plan/exportPlan'
-import { addPlan, updatePlan } from '../../data/repository/planRepository'
-import type { Plan } from '../../business/types/plan.types'
-import { generatePlanWithAI } from '../../container'
-import { readSource } from './useDataSources'
-
+import { useReducer } from "react";
+import { getPlans } from "../../business/use-cases/plan/getPlan";
+import { deletePlan } from "../../business/use-cases/plan/deletePlan";
+import { duplicatePlan } from "../../business/use-cases/plan/duplicatePlan";
+import {
+  addSchedule,
+  calculatePlanData,
+} from "../../business/use-cases/plan/addSchedule";
+import { createPlan } from "../../business/use-cases/plan/createPlan";
+import { removeSchedule } from "../../business/use-cases/plan/removeSchedule";
+import {
+  importPlan,
+  readKrsFile,
+} from "../../business/use-cases/plan/importPlan";
+import {
+  downloadKrs,
+  exportPlan,
+} from "../../business/use-cases/plan/exportPlan";
+import { addPlan, updatePlan } from "../../data/repository/planRepository";
+import type { Plan } from "../../business/types/plan.types";
+import { generatePlanWithAI } from "../../container";
+import { readSource } from "./useDataSources";
 
 export function usePlans() {
   const [, refresh] = useReducer((revision: number) => revision + 1, 0);
@@ -24,27 +32,39 @@ export function usePlans() {
     plans: getPlans(),
     availability: calculatePlanData,
     previewImport: async (file: File, sourceId: string) => {
-      const source = readSource(sourceId)
-      if (!source?.schedules.length) throw new Error('Pilih sumber tujuan yang berisi jadwal.')
-      const result = importPlan(await readKrsFile(file), source, sourceId)
-      if (!result.plan) throw new Error(result.error ?? 'File .krs gagal dibaca.')
-      return { plan: result.plan, warnings: result.warnings ?? [], missing: result.missing ?? [] }
+      const source = readSource(sourceId);
+      if (!source?.schedules.length)
+        throw new Error("Pilih sumber tujuan yang berisi jadwal.");
+      const result = importPlan(await readKrsFile(file), source, sourceId);
+      if (!result.plan)
+        throw new Error(result.error ?? "File .krs gagal dibaca.");
+      return {
+        plan: result.plan,
+        warnings: result.warnings ?? [],
+        missing: result.missing ?? [],
+      };
     },
-    saveImportedPlan: (plan: Plan) => change(() => {
-      const saved = addPlan(plan)
-      if (!saved) throw new Error('Rencana hasil impor gagal disimpan.')
-      return saved
-    }),
+    saveImportedPlan: (plan: Plan) =>
+      change(() => {
+        const saved = addPlan(plan);
+        if (!saved) throw new Error("Rencana hasil impor gagal disimpan.");
+        return saved;
+      }),
     downloadPlan: (plan: Plan) => {
-      const source = readSource(plan.datasourceId ?? '')
-      if (!source?.schedules.length) throw new Error('Sumber jadwal rencana ini tidak tersedia.')
-      const result = exportPlan(plan, source)
+      const source = readSource(plan.datasourceId ?? "");
+      if (!source?.schedules.length)
+        throw new Error("Sumber jadwal rencana ini tidak tersedia.");
+      const result = exportPlan(plan, source);
       if (!result.success || !result.fileName || !result.content) {
-        throw new Error(result.error ?? 'Rencana gagal diekspor.')
+        throw new Error(result.error ?? "Rencana gagal diekspor.");
       }
-      downloadKrs(result)
+      downloadKrs(result);
     },
-    createPlan: (name: string, datasourceId: string, courseCodes: string[] = []) =>
+    createPlan: (
+      name: string,
+      datasourceId: string,
+      courseCodes: string[] = [],
+    ) =>
       change(() => {
         if (!readSource(datasourceId)?.schedules.length)
           throw new Error("Pilih sumber data jadwal.");
@@ -60,7 +80,8 @@ export function usePlans() {
       }),
     generatePlanWithAI: async (planId: string, prompt: string) => {
       const plan = getPlans().find((item) => item.id === planId);
-      if (!plan?.datasourceId) throw new Error("Plan belum terhubung ke sumber data.");
+      if (!plan?.datasourceId)
+        throw new Error("Plan belum terhubung ke sumber data.");
 
       const sourceSchedules = readSource(plan.datasourceId)?.schedules ?? [];
       const courseCodes = plan.choosedCourses ?? [];
@@ -75,10 +96,14 @@ export function usePlans() {
 
       const latestPlan = getPlans().find((item) => item.id === planId);
       if (!latestPlan || latestPlan.updatedAt !== plan.updatedAt) {
-        throw new Error("Rencana berubah selama AI bekerja. Buat jadwal ulang.");
+        throw new Error(
+          "Rencana berubah selama AI bekerja. Buat jadwal ulang.",
+        );
       }
       const currentIds = new Set(latestPlan.data?.choosed ?? []);
-      const generatedIds = new Set(result.schedules.map((schedule) => schedule.id));
+      const generatedIds = new Set(
+        result.schedules.map((schedule) => schedule.id),
+      );
       try {
         for (const scheduleId of currentIds) {
           if (!generatedIds.has(scheduleId)) {
@@ -121,7 +146,7 @@ export function usePlans() {
         if (!result.success) throw new Error(result.error);
       });
     },
-  }
+  };
 }
 
-export type Plans = ReturnType<typeof usePlans>
+export type Plans = ReturnType<typeof usePlans>;

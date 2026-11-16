@@ -1,4 +1,3 @@
-// src/container.ts
 import { supabase } from "./data/supabaseClient";
 import { createSupabaseScheduleGenerator } from "./data/services/supabaseScheduleGenerator";
 import {

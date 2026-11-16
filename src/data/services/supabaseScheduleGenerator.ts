@@ -26,7 +26,7 @@ const extractErrorMessage = async (error: unknown): Promise<string> => {
         const body: unknown = await context.json();
         if (isRecord(body) && typeof body.error === "string") return body.error;
       } catch {
-        // body bukan JSON, pakai pesan default di bawah
+        return "Gagal menghubungi layanan AI.";
       }
     }
   }

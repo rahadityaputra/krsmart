@@ -6,14 +6,13 @@ export const KRS_VERSION = 1;
 export const KRS_EXTENSION = ".krs";
 export const KRS_MIME = "application/json";
 
-/** Bentuk minimal data source yang dibutuhkan. */
 export interface PlanSource {
   name: string;
   schedules: Schedule[];
 }
 
 export interface KrsScheduleEntry {
-  key: string; // `${kodeMK}|${namaKelas}`, stabil antar import
+  key: string;
   code: string;
   name: string;
   className: string;
@@ -31,21 +30,19 @@ export interface KrsFile {
   exportedAt: string;
   plan: {
     name: string;
-    courses: string[]; // kode mata kuliah yang dipilih
+    courses: string[];
   };
   source: { name: string };
-  schedules: KrsScheduleEntry[]; // jadwal (kelas) yang dipilih
+  schedules: KrsScheduleEntry[];
 }
 
 export const scheduleKey = (item: Schedule): string =>
   `${item.course.code}|${item.className}`;
 
-/* ------------------------------ Export ------------------------------ */
-
 export interface ExportPlanResult {
   success: boolean;
   fileName?: string;
-  content?: string; // isi file .krs (JSON string)
+  content?: string;
   mimeType?: string;
   error?: string;
 }
@@ -58,13 +55,6 @@ const toFileName = (name: string): string => {
   return `${safe || "rencana-krs"}${KRS_EXTENSION}`;
 };
 
-/**
- * Use case: Export plan menjadi file .krs yang bisa di-import kembali.
- *
- * Hanya field `name`, `choosedCourses`, dan `data.choosed` dari Plan yang
- * diekspor. `available`/`unavailable` tidak disimpan karena dihitung ulang
- * dari data source saat dibuka.
- */
 export const exportPlan = (
   plan: Plan,
   source: PlanSource | undefined,
@@ -79,7 +69,6 @@ export const exportPlan = (
   const chosenIds = new Set(plan.data?.choosed ?? []);
   const chosen = source.schedules.filter((item) => chosenIds.has(item.id));
 
-  // Kode MK = pilihan di plan + MK dari jadwal yang sudah dipilih
   const courses = [
     ...new Set([
       ...(plan.choosedCourses ?? []),
@@ -115,7 +104,6 @@ export const exportPlan = (
   };
 };
 
-/** Helper browser: memicu download file hasil exportPlan. */
 export const downloadKrs = (result: ExportPlanResult): void => {
   if (!result.success || !result.content || !result.fileName) return;
   const blob = new Blob([result.content], {

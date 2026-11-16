@@ -1,4 +1,3 @@
-
 import { getItem, setItem, removeItem } from "../storage/localStorage";
 import { parseSubjects } from "../../business/use-cases/parser";
 import type { DataSource } from "../../business/types/datasource.types";
@@ -23,8 +22,6 @@ const loadDataSources = (): DataSource[] =>
 const saveDataSources = (dataSources: DataSource[]): boolean =>
   setItem(DATA_SOURCES_KEY, dataSources);
 
-// ---------- Read ----------
-
 export const getAllDataSources = (): DataSource[] => loadDataSources();
 
 export const getDataSourceById = (id: string): DataSource | null =>
@@ -32,8 +29,6 @@ export const getDataSourceById = (id: string): DataSource | null =>
 
 export const getSubjectsOfDataSource = (id: string): DataSource["schedules"] =>
   getDataSourceById(id)?.schedules ?? [];
-
-// ---------- Create ----------
 
 export const addDataSource = (input: NewDataSource): DataSource | null => {
   const schedules = parseSubjects(input.raw);
@@ -48,10 +43,10 @@ export const addDataSource = (input: NewDataSource): DataSource | null => {
     updatedAt: now,
   };
 
-  return saveDataSources([...loadDataSources(), dataSource]) ? dataSource : null;
+  return saveDataSources([...loadDataSources(), dataSource])
+    ? dataSource
+    : null;
 };
-
-// ---------- Update ----------
 
 export const updateDataSource = (
   id: string,
@@ -73,18 +68,18 @@ export const updateDataSource = (
   };
 
   const saved = saveDataSources(
-    dataSources.map((dataSource) => (dataSource.id === id ? updated : dataSource)),
+    dataSources.map((dataSource) =>
+      dataSource.id === id ? updated : dataSource,
+    ),
   );
 
   return saved ? updated : null;
 };
 
-// ---------- Delete ----------
-
 export const removeDataSource = (id: string): boolean => {
   const dataSources = loadDataSources();
   const remaining = dataSources.filter((dataSource) => dataSource.id !== id);
-  if (remaining.length === dataSources.length) return false; // id tidak ditemukan
+  if (remaining.length === dataSources.length) return false;
 
   return saveDataSources(remaining);
 };
