@@ -6,21 +6,21 @@ import type { Workspace } from './hooks/useWorkspace'
 
 export function HomePage({ workspace, onCreate }: {
   workspace: Workspace
-  onCreate: (id: string, codes: string[]) => void
+  onCreate: (id: string) => void
 }) {
   const [creating, setCreating] = useState(false)
   const [deleting, setDeleting] = useState<Plan | null>(null)
   const [query, setQuery] = useState('')
   const plans = workspace.plans.filter((plan) => plan.name.toLowerCase().includes(query.trim().toLowerCase()))
 
-  if (creating) return <CreatePlanForm workspace={workspace} onClose={() => setCreating(false)} onCreate={(id, codes) => {
+  if (creating) return <CreatePlanForm workspace={workspace} onClose={() => setCreating(false)} onCreate={(id) => {
     setCreating(false)
-    onCreate(id, codes)
+    onCreate(id)
   }} />
 
   return <>
     <header className="page-heading">
-      <div><h1>Rencana KRS</h1><p>Susun jadwal kuliah dan siapkan rencana cadangan.</p></div>
+      <div><h1>Rencana KRS</h1><p>Buat rencana dari sumber jadwal kampus atau buka rencana yang sudah tersimpan untuk memilih kelas.</p></div>
       {workspace.sources.length
         ? <button className="primary" onClick={() => setCreating(true)}>Tambah rencana</button>
         : <a className="primary action-link" href="#/data">Tambah sumber data</a>}
