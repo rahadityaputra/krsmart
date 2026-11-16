@@ -39,7 +39,7 @@ export const calculatePlanData = (
     const reasons: string[] = [];
 
     if (choosedCourseIds.has(schedule.course.id)) {
-      reasons.push("Mata kuliah sudah dipilih pada kelas lain");
+      reasons.push("Mata kuliah sudah dipilih pada jadwal lain");
     }
 
     const conflictResult = checkScheduleConflict(schedule, choosedSchedules);
@@ -95,7 +95,7 @@ export const addSchedule = (input: AddScheduleInput): AddScheduleResult => {
   if (sameCourse) {
     return {
       success: false,
-      error: `Mata kuliah ${scheduleToAdd.course.name} sudah dipilih pada kelas ${sameCourse.className}.`,
+      error: `Mata kuliah ${scheduleToAdd.course.name} sudah dipilih pada jadwal ${sameCourse.className}.`,
     };
   }
 

@@ -8,16 +8,16 @@ import { SubjectPicker } from "./components/SubjectPicker";
 import type { Schedule } from "../business/types/scedule.types";
 
 const classTabs = [
-  { id: "selected", label: "Kelas terpilih" },
-  { id: "available", label: "Pilih kelas" },
-  { id: "blocked", label: "Kelas bentrok" },
+  { id: "selected", label: "Jadwal terpilih" },
+  { id: "available", label: "Pilih jadwal" },
+  { id: "blocked", label: "Jadwal bentrok" },
 ] as const;
 
 type ClassTab = (typeof classTabs)[number]["id"];
 
 const emptyMessage: Record<ClassTab, string> = {
-  selected: "Belum ada kelas pada rencana ini.",
-  available: "Tidak ada kelas tambahan yang bisa dipilih.",
+  selected: "Belum ada jadwal pada rencana ini.",
+  available: "Tidak ada jadwal tambahan yang bisa dipilih.",
   blocked: "Belum ada bentrok pada pilihan ini.",
 };
 
@@ -74,6 +74,9 @@ export function Planner({
   const [limit, setLimit] = useState("");
   const [error, setError] = useState("");
   const [ai, setAi] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [aiReasoning, setAiReasoning] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
   const [classTab, setClassTab] = useState<ClassTab>("available");
 
   // Semua kelas (schedule) dari course yang dipilih
@@ -181,7 +184,7 @@ export function Planner({
                 setClassTab("available");
               }}
             >
-              Lanjut pilih kelas
+              Lanjut pilih jadwal
             </button>
           </div>
           <SubjectPicker
@@ -246,7 +249,7 @@ export function Planner({
               <small>Perubahan tersimpan otomatis</small>
             </div>
             {!selected.length && (
-              <p className="notice">Pilih kelas untuk mengisi kalender.</p>
+              <p className="notice">Pilih jadwal untuk mengisi kalender.</p>
             )}
             <Calendar
               schedules={selected}
@@ -256,11 +259,11 @@ export function Planner({
             />
           </section>
 
-          <section className="class-section" aria-label="Daftar kelas">
+          <section className="class-section" aria-label="Daftar jadwal">
             <div
               className="class-tabs"
               role="tablist"
-              aria-label="Status kelas"
+              aria-label="Status jadwal"
             >
               {classTabs.map(({ id, label }, index) => (
                 <button
@@ -306,7 +309,7 @@ export function Planner({
                 {classTab === id && (
                   <>
                     <label className="class-search">
-                      <span className="sr-only">Cari kelas</span>
+                      <span className="sr-only">Cari jadwal</span>
                       <input
                         type="search"
                         value={query}
@@ -319,7 +322,7 @@ export function Planner({
                     {!tabItems.length && (
                       <p className="empty">
                         {query.trim()
-                          ? "Tidak ada kelas yang cocok dengan pencarian."
+                          ? "Tidak ada jadwal yang cocok dengan pencarian."
                           : emptyMessage[id]}
                       </p>
                     )}
@@ -366,7 +369,7 @@ export function Planner({
                             >
                               {id === "selected"
                                 ? "Batal pilih"
-                                : "Pilih kelas"}
+                                : "Pilih jadwal"}
                               <span className="sr-only">
                                 {" "}
                                 {item.course.name} {item.className}
@@ -387,23 +390,61 @@ export function Planner({
       {ai && (
         <Dialog
           title="Asisten jadwal"
+          wide
           onClose={() => {
-            setAi(false);
+            if (!aiLoading) setAi(false);
           }}
         >
-          <p>
-            Penjadwalan berdasarkan preferensi melalui Supabase segera hadir.
-          </p>
-          <footer className="actions">
-            <button
-              className="secondary"
-              onClick={() => {
-                setAi(false);
-              }}
-            >
-              Tutup
-            </button>
-          </footer>
+          <form
+            onSubmit={async (event) => {
+              event.preventDefault();
+              setError("");
+              setAiReasoning("");
+              setAiLoading(true);
+              try {
+                const result = await workspace.generatePlanWithAI(
+                  plan.id,
+                  aiPrompt,
+                );
+                setAiReasoning(result.reasoning ?? "Jadwal berhasil dibuat.");
+              } catch (problem) {
+                setError((problem as Error).message);
+              } finally {
+                setAiLoading(false);
+              }
+            }}
+          >
+            <label>
+              Preferensi jadwal
+              <textarea
+                required
+                rows={5}
+                value={aiPrompt}
+                placeholder="Contoh: pilih jadwal tanpa kuliah pagi dan sisakan hari Jumat kosong."
+                onChange={(event) => {
+                  setAiPrompt(event.target.value);
+                }}
+                disabled={aiLoading}
+              />
+            </label>
+            {aiReasoning && <p className="notice">{aiReasoning}</p>}
+            <ErrorText message={error} />
+            <footer className="actions">
+              <button
+                type="button"
+                className="secondary"
+                onClick={() => {
+                  setAi(false);
+                }}
+                disabled={aiLoading}
+              >
+                Tutup
+              </button>
+              <button className="primary" disabled={aiLoading}>
+                {aiLoading ? "Menyusun jadwal…" : "Buat jadwal"}
+              </button>
+            </footer>
+          </form>
         </Dialog>
       )}
     </div>

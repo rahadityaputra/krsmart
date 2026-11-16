@@ -11,6 +11,8 @@ import { addSchedule, calculatePlanData } from '../../business/use-cases/plan/ad
 import { createDataSource } from '../../business/use-cases/datasource/createDataSource'
 import { createPlan } from '../../business/use-cases/plan/createPlan'
 import { removeSchedule } from '../../business/use-cases/plan/removeSchedule'
+import { updatePlan } from '../../data/repository/planRepository'
+import { generatePlanWithAI } from '../../container'
 
 export function useWorkspace() {
   const [, refresh] = useReducer((revision: number) => revision + 1, 0);
@@ -48,14 +50,52 @@ export function useWorkspace() {
         if (!result.success) throw new Error(result.error);
       });
     },
-    createPlan: (name: string, datasourceId: string) =>
+    createPlan: (name: string, datasourceId: string, courseCodes: string[] = []) =>
       change(() => {
         if (!getDataSource(datasourceId))
           throw new Error("Pilih sumber data jadwal.");
-        const result = createPlan({ name, datasourceId });
+        const result = createPlan({ name, datasourceId, courseCodes });
         if (!result.plan) throw new Error(result.error);
         return result.plan;
       }),
+    updatePlanCourses: (planId: string, courseCodes: string[]) =>
+      change(() => {
+        const plan = updatePlan(planId, { choosedCourses: courseCodes });
+        if (!plan) throw new Error("Plan tidak ditemukan.");
+        return plan;
+      }),
+    generatePlanWithAI: async (planId: string, prompt: string) => {
+      const plan = getPlans().find((item) => item.id === planId);
+      if (!plan?.datasourceId) throw new Error("Plan belum terhubung ke sumber data.");
+
+      const sourceSchedules = getDataSource(plan.datasourceId)?.schedules ?? [];
+      const courseCodes = plan.choosedCourses ?? [];
+      const schedules = sourceSchedules.filter((schedule) =>
+        courseCodes.includes(schedule.course.code),
+      );
+      const result = await generatePlanWithAI({ prompt, schedules });
+      if (!result.success) {
+        const detail = result.issues?.map((issue) => issue.message).join(" ");
+        throw new Error(detail ? `${result.error} ${detail}` : result.error);
+      }
+
+      const currentIds = new Set(plan.data?.choosed ?? []);
+      const generatedIds = new Set(result.schedules.map((schedule) => schedule.id));
+      for (const scheduleId of currentIds) {
+        if (!generatedIds.has(scheduleId)) {
+          const removed = removeSchedule({ planId, scheduleId });
+          if (!removed.success) throw new Error(removed.error);
+        }
+      }
+      for (const schedule of result.schedules) {
+        if (!currentIds.has(schedule.id)) {
+          const added = addSchedule({ planId, scheduleId: schedule.id });
+          if (!added.success) throw new Error(added.error);
+        }
+      }
+      refresh();
+      return result;
+    },
     duplicatePlan: (id: string) =>
       change(() => {
         const result = duplicatePlan(id);

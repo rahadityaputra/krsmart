@@ -38,6 +38,7 @@ export default function App() {
         workspace={workspace}
         draftCodes={drafts[plan.id]}
         onDraftChange={(codes) => {
+          workspace.updatePlanCourses(plan.id, codes)
           rememberSubjects(plan.id, codes);
         }}
       />

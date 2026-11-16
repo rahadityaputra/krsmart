@@ -34,7 +34,7 @@ export function HomePage({ workspace, onCreate }: {
         {plans.map((plan) => <div className="plan-row" key={plan.id}>
           <div>
             <a className="plan-link" href={`#/plan/${plan.id}`}>{plan.name}</a>
-            <small>{workspace.sources.find((source) => source.id === plan.datasourceId)?.name ?? 'Sumber belum tersedia'} · {plan.data?.choosed.length ?? 0} kelas dipilih</small>
+            <small>{workspace.sources.find((source) => source.id === plan.datasourceId)?.name ?? 'Sumber belum tersedia'} · {plan.data?.choosed.length ?? 0} jadwal dipilih</small>
           </div>
           <button className="quiet danger-text" onClick={() => setDeleting(plan)}>Hapus<span className="sr-only"> {plan.name}</span></button>
         </div>)}

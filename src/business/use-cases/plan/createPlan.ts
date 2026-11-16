@@ -5,6 +5,7 @@ export interface createPlanInput {
   name: string;
   datasourceId?: string;
   courseIds?: number[];
+  courseCodes?: string[];
 }
 
 export interface createPlanResult {
@@ -30,6 +31,7 @@ export const createPlan = (input: createPlanInput): createPlanResult => {
   const plan = repoAddPlan({
     name,
     datasourceId,
+    choosedCourses: input.courseCodes,
     data: {
       choosed: input.courseIds ?? [],
       available: input.courseIds ?? [],

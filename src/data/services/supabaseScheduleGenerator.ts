@@ -39,8 +39,17 @@ export const createSupabaseScheduleGenerator = (
   client: AppSupabaseClient,
 ): ScheduleGenerator => ({
   generate: async (request) => {
+    const schedules = request.schedules.map((schedule) => ({
+      id: schedule.id,
+      courseCode: schedule.course.code,
+      courseName: schedule.course.name,
+      className: schedule.className,
+      credits: schedule.course.credits,
+      schedule: `${schedule.day} ${schedule.intervalTime.start}-${schedule.intervalTime.end}`,
+      lecturer: schedule.lecturers.join(", "),
+    }));
     const response = await client.functions.invoke<unknown>(FUNCTION_NAME, {
-      body: request,
+      body: { prompt: request.prompt, schedules },
     });
     const data: unknown = response.data;
     const error: unknown = response.error;
