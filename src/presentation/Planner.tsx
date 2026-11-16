@@ -21,11 +21,58 @@ const emptyMessage: Record<ClassTab, string> = {
   blocked: "Belum ada bentrok pada pilihan ini.",
 };
 
+type GroupBy = "none" | "lecturer" | "subject" | "day";
+
+type ClassGroup = { key: string; title: string; items: Schedule[] };
+
+const dayOrder = new Map(
+  ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu", "Minggu"].map(
+    (day, index) => [day, index],
+  ),
+);
+
 const totalCredits = (items: Schedule[]) =>
   items.reduce((sum, item) => sum + item.course.credits, 0);
 
 const timeRange = (item: Schedule) =>
   `${item.intervalTime.start}–${item.intervalTime.end}`;
+
+function groupClasses(items: Schedule[], groupBy: GroupBy): ClassGroup[] {
+  if (groupBy === "none") return [{ key: "", title: "", items }];
+
+  const groups = new Map<string, ClassGroup>();
+  for (const item of items) {
+    let labels: [string, string][];
+    if (groupBy === "lecturer") {
+      const names = [
+        ...new Set(item.lecturers.map((name) => name.trim()).filter(Boolean)),
+      ];
+      labels = (names.length ? names : ["Dosen belum tercantum"]).map(
+        (name) => [name, name],
+      );
+    } else if (groupBy === "subject") {
+      labels = [[item.course.code, `${item.course.name} · ${item.course.code}`]];
+    } else {
+      labels = [[item.day, item.day]];
+    }
+
+    for (const [key, title] of labels) {
+      const group = groups.get(key) ?? { key, title, items: [] };
+      group.items.push(item);
+      groups.set(key, group);
+    }
+  }
+
+  return [...groups.values()].sort((a, b) => {
+    if (groupBy === "day") {
+      return (
+        (dayOrder.get(a.key) ?? dayOrder.size) -
+        (dayOrder.get(b.key) ?? dayOrder.size)
+      );
+    }
+    return a.title.localeCompare(b.title, "id", { numeric: true });
+  });
+}
 
 export function Planner({
   plan,
@@ -78,6 +125,7 @@ export function Planner({
   const [aiReasoning, setAiReasoning] = useState("");
   const [aiLoading, setAiLoading] = useState(false);
   const [classTab, setClassTab] = useState<ClassTab>("available");
+  const [groupBy, setGroupBy] = useState<GroupBy>("none");
 
   // Semua kelas (schedule) dari course yang dipilih
   const choices = schedules.filter((item) => codes.includes(item.course.code));
@@ -87,7 +135,7 @@ export function Planner({
   );
 
   const matches = (item: Schedule) =>
-    `${item.course.name} ${item.course.code} ${item.className} ${item.lecturers.join(" ")}`
+    `${item.course.name} ${item.course.code} ${item.className} ${item.day} ${item.lecturers.join(" ")}`
       .toLowerCase()
       .includes(query.trim().toLowerCase());
 
@@ -308,17 +356,34 @@ export function Planner({
               >
                 {classTab === id && (
                   <>
-                    <label className="class-search">
-                      <span className="sr-only">Cari jadwal</span>
-                      <input
-                        type="search"
-                        value={query}
-                        placeholder="Cari mata kuliah atau dosen…"
-                        onChange={(event) => {
-                          setQuery(event.target.value);
-                        }}
-                      />
-                    </label>
+                    <div className="class-filters">
+                      <label className="class-search">
+                        <span className="sr-only">Cari jadwal</span>
+                        <input
+                          type="search"
+                          value={query}
+                          placeholder="Cari mata kuliah, dosen, atau hari…"
+                          onChange={(event) => {
+                            setQuery(event.target.value);
+                          }}
+                        />
+                      </label>
+                      <label>
+                        Kelompokkan berdasarkan
+                        <select
+                          value={groupBy}
+                          onChange={(event) => {
+                            setGroupBy(event.target.value as GroupBy);
+                          }}
+                        >
+                          <option value="none">Tanpa pengelompokan</option>
+                          <option value="lecturer">Dosen</option>
+                          <option value="subject">Mata kuliah</option>
+                          <option value="day">Hari</option>
+                        </select>
+                      </label>
+                    </div>
+
                     {!tabItems.length && (
                       <p className="empty">
                         {query.trim()
@@ -326,59 +391,70 @@ export function Planner({
                           : emptyMessage[id]}
                       </p>
                     )}
-                    <div
-                      className={
-                        id === "available" ? "class-options-grid" : undefined
-                      }
-                    >
-                      {tabItems.map((item) => (
-                        <div className="class-option" key={item.id}>
-                          <div>
-                            <strong>{item.course.name}</strong>
-                            <small>
-                              {item.className} · {item.course.credits} SKS
-                            </small>
-                          </div>
-                          <div>
-                            <span>
-                              {item.day} {timeRange(item)}
-                            </span>
-                            <small>{item.classRoom}</small>
-                          </div>
-                          <div className="class-lecturers">
-                            {item.lecturers.map((name) => (
-                              <small key={name}>{name}</small>
-                            ))}
-                          </div>
-                          {id === "blocked" ? (
-                            <small className="danger-text class-reason">
-                              {availability.unavailable
-                                .find((entry) => entry.id === item.id)
-                                ?.reason.join(" · ")}
-                            </small>
-                          ) : (
-                            <button
-                              className={
-                                id === "selected"
-                                  ? "quiet danger-text"
-                                  : "secondary"
-                              }
-                              onClick={() => {
-                                pick(item, id === "selected");
-                              }}
-                            >
-                              {id === "selected"
-                                ? "Batal pilih"
-                                : "Pilih jadwal"}
-                              <span className="sr-only">
-                                {" "}
-                                {item.course.name} {item.className}
-                              </span>
-                            </button>
-                          )}
+
+                    {groupClasses(tabItems, groupBy).map((group) => (
+                      <div className="class-group" key={group.key}>
+                        {group.title && (
+                          <h3>
+                            {group.title}{" "}
+                            <span className="count">{group.items.length}</span>
+                          </h3>
+                        )}
+                        <div
+                          className={
+                            id === "available" ? "class-options-grid" : undefined
+                          }
+                        >
+                          {group.items.map((item) => (
+                            <div className="class-option" key={item.id}>
+                              <div>
+                                <strong>{item.course.name}</strong>
+                                <small>
+                                  {item.className} · {item.course.credits} SKS
+                                </small>
+                              </div>
+                              <div>
+                                <span>
+                                  {item.day} {timeRange(item)}
+                                </span>
+                                <small>{item.classRoom}</small>
+                              </div>
+                              <div className="class-lecturers">
+                                {item.lecturers.map((name) => (
+                                  <small key={name}>{name}</small>
+                                ))}
+                              </div>
+                              {id === "blocked" ? (
+                                <small className="danger-text class-reason">
+                                  {availability.unavailable
+                                    .find((entry) => entry.id === item.id)
+                                    ?.reason.join(" · ")}
+                                </small>
+                              ) : (
+                                <button
+                                  className={
+                                    id === "selected"
+                                      ? "quiet danger-text"
+                                      : "secondary"
+                                  }
+                                  onClick={() => {
+                                    pick(item, id === "selected");
+                                  }}
+                                >
+                                  {id === "selected"
+                                    ? "Batal pilih"
+                                    : "Pilih jadwal"}
+                                  <span className="sr-only">
+                                    {" "}
+                                    {item.course.name} {item.className}
+                                  </span>
+                                </button>
+                              )}
+                            </div>
+                          ))}
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </>
                 )}
               </div>
