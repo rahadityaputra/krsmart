@@ -31,7 +31,7 @@ export function ScheduleAssistant({ onGenerate, onClose, replacesSchedule }: {
       if (!loading && prompt.trim()) void generate()
     }}>
       <label>Preferensi jadwal<textarea required rows={5} value={prompt} disabled={loading}
-        placeholder="Contoh: sisakan hari Jumat kosong." onChange={(event) => setPrompt(event.target.value)} /></label>
+        placeholder="Contoh: sisakan hari Jumat kosong." onChange={(event) => { setPrompt(event.target.value); }} /></label>
       {replacesSchedule && <p>Jadwal yang berhasil dibuat akan menggantikan kelas terpilih.</p>}
       {message && <p role="status" className="notice">{message}</p>}
       <ErrorText message={error} />

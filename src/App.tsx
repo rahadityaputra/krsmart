@@ -4,34 +4,38 @@ import { ComparisonsPage } from './presentation/ComparisonsPage'
 import { HomePage } from './presentation/HomePage'
 import { Planner } from './presentation/Planner'
 import { Sidebar } from './presentation/components/Sidebar'
-import { useWorkspace } from './presentation/hooks/useWorkspace'
+import { usePlans } from './presentation/hooks/usePlans'
+import { useDataSources } from './presentation/hooks/useDataSources'
+import { useComparisons } from './presentation/hooks/useComparisons'
 import './App.css'
 
 export default function App() {
-  const workspace = useWorkspace()
+  const plansDomain = usePlans()
+  const dataSources = useDataSources()
+  const comparisons = useComparisons()
   const [route, setRoute] = useState(() => location.hash || '#/')
   const [collapsed, setCollapsed] = useState(false)
 
   useEffect(() => {
-    const update = () => setRoute(location.hash || '#/')
+    const update = () => { setRoute(location.hash || '#/'); }
     window.addEventListener('hashchange', update)
-    return () => window.removeEventListener('hashchange', update)
+    return () => { window.removeEventListener('hashchange', update); }
   }, [])
 
-  const plan = workspace.plans.find((item) => route === `#/plan/${item.id}`)
+  const plan = plansDomain.plans.find((item) => route === `#/plan/${item.id}`)
   const comparison = route === '#/compare' || route.startsWith('#/compare/')
   let page
   if (plan) {
-    page = <Planner key={plan.id} plan={plan} workspace={workspace} />
+    page = <Planner key={plan.id} plan={plan} plansDomain={plansDomain} dataSources={dataSources} />
   } else if (comparison) {
-    page = <ComparisonsPage key={route} workspace={workspace}
+    page = <ComparisonsPage key={route} plansDomain={plansDomain} dataSources={dataSources} comparisons={comparisons}
       viewId={route === '#/compare' ? undefined : route.slice('#/compare/'.length)} />
   } else if (route === '#/data') {
-    page = <CatalogPage workspace={workspace} />
+    page = <CatalogPage dataSources={dataSources} />
   } else if (route === '#/file') {
     page = <TransferPage />
   } else if (route === '#/') {
-    page = <HomePage workspace={workspace} onCreate={(id) => {
+    page = <HomePage plansDomain={plansDomain} dataSources={dataSources} onCreate={(id) => {
       location.hash = `/plan/${id}`
     }} />
   } else {
@@ -40,7 +44,7 @@ export default function App() {
 
   return <div className={`app ${collapsed ? 'rail-small' : ''}`}>
     <Sidebar key={route} active={plan ? '#/' : comparison ? '#/compare' : route}
-      collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
+      collapsed={collapsed} onToggle={() => { setCollapsed(!collapsed); }} />
     <main>{page}</main>
   </div>
 }

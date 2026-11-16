@@ -21,7 +21,7 @@ export function Sidebar({ active, collapsed, onToggle }: {
       <button className="icon-button desktop-menu" aria-label={collapsed ? 'Lebarkan sidebar' : 'Ciutkan sidebar'}
         aria-controls="primary-nav" aria-expanded={!collapsed} onClick={onToggle}>☰</button>
       <button ref={menuButton} className="icon-button mobile-menu" aria-label="Menu navigasi"
-        aria-controls="primary-nav" aria-expanded={mobileOpen} onClick={() => setMobileOpen(!mobileOpen)}>☰</button>
+        aria-controls="primary-nav" aria-expanded={mobileOpen} onClick={() => { setMobileOpen(!mobileOpen); }}>☰</button>
     </div>
     <nav id="primary-nav" className={mobileOpen ? 'nav-open' : ''} aria-label="Utama" onKeyDown={(event) => {
       if (event.key === 'Escape' && mobileOpen) {
@@ -30,7 +30,7 @@ export function Sidebar({ active, collapsed, onToggle }: {
       }
     }}>
       {destinations.map(({ href, name, symbol }) => <a key={href} href={href} aria-label={name}
-        aria-current={active === href ? 'page' : undefined} onClick={() => setMobileOpen(false)}>
+        aria-current={active === href ? 'page' : undefined} onClick={() => { setMobileOpen(false); }}>
         <span className="nav-symbol" aria-hidden="true">{symbol}</span><span className="nav-label">{name}</span>
       </a>)}
     </nav>

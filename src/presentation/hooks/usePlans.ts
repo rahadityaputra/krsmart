@@ -1,28 +1,16 @@
 import { useReducer } from 'react'
-import { getDataSource, getDataSources } from '../../business/use-cases/datasource/getDataSource'
 import { getPlans } from '../../business/use-cases/plan/getPlan'
 import { deletePlan } from '../../business/use-cases/plan/deletePlan'
 import { duplicatePlan } from '../../business/use-cases/plan/duplicatePlan'
-import { deleteDataSource } from '../../business/use-cases/datasource/deleteDataSource'
-import { parseSubjects } from '../../business/use-cases/parser'
-import { createView } from '../../business/use-cases/view/createView'
-import { deleteView } from '../../business/use-cases/view/deleteView'
-import { getViews, getResolvedView } from '../../business/use-cases/view/getView'
 import { addSchedule, calculatePlanData } from '../../business/use-cases/plan/addSchedule'
-import { createDataSource } from '../../business/use-cases/datasource/createDataSource'
 import { createPlan } from '../../business/use-cases/plan/createPlan'
 import { removeSchedule } from '../../business/use-cases/plan/removeSchedule'
 import { updatePlan } from '../../data/repository/planRepository'
 import { generatePlanWithAI } from '../../container'
+import { readSource } from './useDataSources'
 
-function readSource(id: string) {
-  const source = getDataSource(id);
-  if (!source) return null;
-  // Katalog yang tersimpan sebelum perubahan format dapat belum memiliki schedules.
-  return { ...source, schedules: Array.isArray(source.schedules) ? source.schedules : [] };
-}
 
-export function useWorkspace() {
+export function usePlans() {
   const [, refresh] = useReducer((revision: number) => revision + 1, 0);
   function change<T>(action: () => T) {
     const result = action();
@@ -31,37 +19,7 @@ export function useWorkspace() {
   }
   return {
     plans: getPlans(),
-    views: getViews(),
-    view: getResolvedView,
-    deleteView: (id: string) => change(() => {
-      const result = deleteView(id)
-      if (!result.success) throw new Error(result.error)
-    }),
-    createView: (name: string, planIds: string[]) => change(() => {
-      const result = createView({ name, planIds })
-      if (!result.view) throw new Error(result.error)
-      return result.view
-    }),
-    sources: getDataSources(),
-    source: readSource,
-    preview: parseSubjects,
     availability: calculatePlanData,
-    saveSource: (name: string, raw: string) =>
-      change(() => {
-        const result = createDataSource({ name, raw });
-
-        if (!result.dataSource) throw new Error(result.error);
-        return result.dataSource;
-      }),
-    deleteSource: (id: string) => {
-      change(() => {
-        if (getPlans().some((plan) => plan.datasourceId === id)) {
-          throw new Error("Sumber ini masih dipakai oleh rencana KRS.");
-        }
-        const result = deleteDataSource(id);
-        if (!result.success) throw new Error(result.error);
-      });
-    },
     createPlan: (name: string, datasourceId: string, courseCodes: string[] = []) =>
       change(() => {
         if (!readSource(datasourceId)?.schedules.length)
@@ -139,7 +97,7 @@ export function useWorkspace() {
         if (!result.success) throw new Error(result.error);
       });
     },
-  };
+  }
 }
 
-export type Workspace = ReturnType<typeof useWorkspace>;
+export type Plans = ReturnType<typeof usePlans>

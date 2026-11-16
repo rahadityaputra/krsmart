@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { ErrorText } from '../components'
-import type { Workspace } from '../hooks/useWorkspace'
+import type { Plans } from '../hooks/usePlans'
+import type { DataSources } from '../hooks/useDataSources'
 import { SubjectPicker } from './SubjectPicker'
 
-export function CreatePlanForm({ workspace, onClose, onCreate }: {
-  workspace: Workspace
+export function CreatePlanForm({ plansDomain, dataSources, onClose, onCreate }: {
+  plansDomain: Plans; dataSources: DataSources
   onClose: () => void
   onCreate: (id: string) => void
 }) {
@@ -12,7 +13,7 @@ export function CreatePlanForm({ workspace, onClose, onCreate }: {
   const [sourceId, setSourceId] = useState('')
   const [codes, setCodes] = useState<string[]>([])
   const [error, setError] = useState('')
-  const source = workspace.source(sourceId)
+  const source = dataSources.source(sourceId)
   const canCreate = Boolean(name.trim() && source?.schedules.length && codes.length)
 
   return <>
@@ -22,20 +23,20 @@ export function CreatePlanForm({ workspace, onClose, onCreate }: {
       event.preventDefault()
       if (!canCreate) return
       try {
-        const plan = workspace.createPlan(name, sourceId, codes)
+        const plan = plansDomain.createPlan(name, sourceId, codes)
         onCreate(plan.id)
       } catch (problem) {
         setError((problem as Error).message)
       }
     }}>
       <div className="selection-fields">
-      <label>Nama rencana<input required maxLength={80} value={name} onChange={(event) => setName(event.target.value)} /></label>
+      <label>Nama rencana<input required maxLength={80} value={name} onChange={(event) => { setName(event.target.value); }} /></label>
       <label>Sumber data<select required value={sourceId} onChange={(event) => {
         setSourceId(event.target.value)
         setCodes([])
       }}>
         <option value="" disabled>Pilih sumber data</option>
-        {workspace.sources.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+        {dataSources.sources.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
       </select></label>
       </div>
       {source && (source.schedules.length

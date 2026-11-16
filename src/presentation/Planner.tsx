@@ -3,7 +3,8 @@ import type { Schedule } from '../business/types/scedule.types'
 import type { Plan } from '../business/types/plan.types'
 import { Calendar, ErrorText } from './components'
 import { credits, days, time } from './components/schedule-utils'
-import type { Workspace } from './hooks/useWorkspace'
+import type { Plans } from './hooks/usePlans'
+import type { DataSources } from './hooks/useDataSources'
 import { SubjectPicker } from './components/SubjectPicker'
 import { ScheduleAssistant } from './components/ScheduleAssistant'
 
@@ -43,11 +44,11 @@ function groupClasses(courses: Schedule[], groupBy: GroupBy) {
   })
 }
 
-export function Planner({ plan, workspace }: {
+export function Planner({ plan, plansDomain, dataSources }: {
   plan: Plan
-  workspace: Workspace
+  plansDomain: Plans; dataSources: DataSources
 }) {
-  const source = workspace.source(plan.datasourceId ?? '')
+  const source = dataSources.source(plan.datasourceId ?? '')
   const courses = source?.schedules ?? []
   const [editing, setEditing] = useState(!plan.choosedCourses?.length && !plan.data?.choosed.length)
   const codes = [...new Set([
@@ -62,7 +63,7 @@ export function Planner({ plan, workspace }: {
   const [groupBy, setGroupBy] = useState<GroupBy>('none')
   const selected = courses.filter((course) => plan.data?.choosed.includes(course.id))
   const choices = courses.filter((course) => codes.includes(course.course.code))
-  const availability = workspace.availability(choices, selected.map((course) => course.id))
+  const availability = plansDomain.availability(choices, selected.map((course) => course.id))
   const matches = (course: Schedule) => `${course.course.name} ${course.course.code} ${course.className} ${course.day} ${course.lecturers.join(' ')}`.toLowerCase().includes(query.trim().toLowerCase())
   const ready = choices.filter((course) => availability.available.includes(course.id) && matches(course))
   const blocked = choices.filter((course) => availability.unavailable.some((option) => option.id === course.id && option.reason.some((reason) => reason.startsWith('Bentrok'))) && !selected.some((item) => item.course.code === course.course.code) && matches(course))
@@ -79,8 +80,8 @@ export function Planner({ plan, workspace }: {
   }
   function pick(course: Schedule, remove = false) {
     act(() => {
-      workspace.pick(plan.id, course.id, remove)
-      if (remove) workspace.updatePlanCourses(plan.id, codes)
+      plansDomain.pick(plan.id, course.id, remove)
+      if (remove) plansDomain.updatePlanCourses(plan.id, codes)
     })
   }
   if (!source) return <div className="empty paper"><h1>{plan.name}</h1><p>Sumber jadwal untuk rencana ini tidak tersedia.</p><a href="#/">Kembali ke rencana KRS</a></div>
@@ -90,40 +91,40 @@ export function Planner({ plan, workspace }: {
     <a className="back" href="#/">‹ Rencana KRS</a>
     <header className="page-heading"><div><h1>{plan.name}</h1><p>Sumber jadwal: {source.name}</p><p>Pilih kelas yang tersedia di bawah kalender. Kelas yang dipilih langsung masuk ke jadwal.</p></div>
       <div className="button-row">
-        <button className="secondary" onClick={() => act(() => {
-          const next = workspace.duplicatePlan(plan.id)
+        <button className="secondary" onClick={() => { act(() => {
+          const next = plansDomain.duplicatePlan(plan.id)
           location.hash = `/plan/${next.id}`
-        })}>Duplikasi</button>
+        }); }}>Duplikasi</button>
       </div>
     </header>
     <ErrorText message={error} />
     {editing ? <section className="paper select-subjects">
       <div className="section-heading">
-        <button className="primary" disabled={!codes.length} onClick={() => act(() => {
+        <button className="primary" disabled={!codes.length} onClick={() => { act(() => {
           setQuery(''); setEditing(false); setClassTab('available')
-        })}>Lanjut pilih kelas</button></div>
+        }); }}>Lanjut pilih kelas</button></div>
       <SubjectPicker courses={courses.map((schedule) => schedule.course)} codes={codes}
-        onChange={(next) => act(() => workspace.updatePlanCourses(plan.id, next))}
+        onChange={(next) => { act(() => plansDomain.updatePlanCourses(plan.id, next)); }}
         locked={selected.map((course) => course.course.code)} />
     </section> : <>
       <div className="planner-toolbar paper">
         <div><strong>{credits(selected)} SKS</strong><span>{selected.length} / {codes.length} mata kuliah terjadwal</span></div>
-        <label className="limit">Batas SKS<input type="number" min="1" max="99" value={limit} placeholder="Opsional" onChange={(event) => setLimit(event.target.value)} /></label>
+        <label className="limit">Batas SKS<input type="number" min="1" max="99" value={limit} placeholder="Opsional" onChange={(event) => { setLimit(event.target.value); }} /></label>
         <div className="button-row"><button className="secondary" onClick={() => { setQuery(''); setEditing(true) }}>Ubah mata kuliah</button>
-          <button className="primary" onClick={() => setAi(true)}>Susun jadwal dengan AI</button></div>
+          <button className="primary" onClick={() => { setAi(true); }}>Susun jadwal dengan AI</button></div>
       </div>
       {limit && credits(selected) > Number(limit) && <p className="notice" role="status">Total melebihi batas {limit} SKS.</p>}
         <section className="calendar-panel" aria-labelledby="calendar-title">
           <div className="section-heading"><h2 id="calendar-title">Kalender mingguan</h2><small>Perubahan tersimpan otomatis</small></div>
           {!selected.length && <p className="notice">Pilih kelas untuk mengisi kalender.</p>}
-          <Calendar courses={selected} onRemove={(course) => pick(course, true)} />
+          <Calendar courses={selected} onRemove={(course) => { pick(course, true); }} />
         </section>
         <section className="class-section" aria-label="Daftar kelas">
           <div className="class-tabs" role="tablist" aria-label="Status kelas">
             {classTabs.map(({ id, label }, index) => <button key={id} type="button" role="tab"
               id={`class-tab-${id}`} aria-controls={`class-panel-${id}`}
               aria-selected={classTab === id} tabIndex={classTab === id ? 0 : -1}
-              onClick={() => setClassTab(id)}
+              onClick={() => { setClassTab(id); }}
               onKeyDown={(event) => {
                 const last = classTabs.length - 1
                 const next = { ArrowRight: (index + 1) % classTabs.length, ArrowLeft: (index + last) % classTabs.length, Home: 0, End: last }
@@ -140,8 +141,8 @@ export function Planner({ plan, workspace }: {
             id={`class-panel-${id}`} aria-labelledby={`class-tab-${id}`} hidden={classTab !== id}>
             {classTab === id && <>
               <div className="class-filters">
-                <label className="class-search">Cari kelas<input type="search" value={query} placeholder="Mata kuliah, dosen, atau hari" onChange={(event) => setQuery(event.target.value)} /></label>
-                <label>Kelompokkan berdasarkan<select value={groupBy} onChange={(event) => setGroupBy(event.target.value as GroupBy)}>
+                <label className="class-search">Cari kelas<input type="search" value={query} placeholder="Mata kuliah, dosen, atau hari" onChange={(event) => { setQuery(event.target.value); }} /></label>
+                <label>Kelompokkan berdasarkan<select value={groupBy} onChange={(event) => { setGroupBy(event.target.value as GroupBy); }}>
                   <option value="none">Tanpa pengelompokan</option>
                   <option value="lecturer">Dosen</option>
                   <option value="subject">Mata kuliah</option>
@@ -157,7 +158,7 @@ export function Planner({ plan, workspace }: {
                 <div className="class-lecturers">{course.lecturers.map((name) => <small key={name}>{name}</small>)}</div>
                 {id === 'blocked'
                   ? <small className="danger-text class-reason">{availability.unavailable.find((entry) => entry.id === course.id)?.reason.join(' · ')}</small>
-                  : <button className={id === 'selected' ? 'quiet danger-text' : 'primary'} onClick={() => pick(course, id === 'selected')}>
+                  : <button className={id === 'selected' ? 'quiet danger-text' : 'primary'} onClick={() => { pick(course, id === 'selected'); }}>
                     {id === 'selected' ? 'Batal pilih' : 'Pilih kelas'}<span className="sr-only"> {course.course.name} {course.className}</span>
                   </button>}
               </div>)}
@@ -171,7 +172,7 @@ export function Planner({ plan, workspace }: {
           </div>)}
         </section>
     </>}
-    {ai && <ScheduleAssistant onClose={() => setAi(false)} replacesSchedule={selected.length > 0}
-      onGenerate={(prompt) => workspace.generatePlanWithAI(plan.id, prompt)} />}
+    {ai && <ScheduleAssistant onClose={() => { setAi(false); }} replacesSchedule={selected.length > 0}
+      onGenerate={(prompt) => plansDomain.generatePlanWithAI(plan.id, prompt)} />}
   </div>
 }

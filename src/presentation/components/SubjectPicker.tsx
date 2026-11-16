@@ -18,11 +18,11 @@ export function SubjectPicker({ courses, codes, onChange, locked = [] }: {
     <legend>Pilih mata kuliah</legend>
     <p>{codes.length} mata kuliah · {subjects.filter((course) => codes.includes(course.code)).reduce((total, course) => total + course.credits, 0)} SKS</p>
     <label>Cari mata kuliah<input type="search" value={query} placeholder="Nama atau kode mata kuliah"
-      onChange={(event) => setQuery(event.target.value)} /></label>
+      onChange={(event) => { setQuery(event.target.value); }} /></label>
     <div className="subject-list">
       {visible.map((course) => <label className="subject-row" key={course.code}>
         <input type="checkbox" checked={codes.includes(course.code)} disabled={locked.includes(course.code)}
-          onChange={(event) => onChange(event.target.checked ? [...codes, course.code] : codes.filter((code) => code !== course.code))} />
+          onChange={(event) => { onChange(event.target.checked ? [...codes, course.code] : codes.filter((code) => code !== course.code)); }} />
         <span>{course.name}</span><small>{course.credits} SKS</small>
       </label>)}
     </div>
