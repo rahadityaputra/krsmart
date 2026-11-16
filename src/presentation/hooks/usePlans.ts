@@ -5,7 +5,10 @@ import { duplicatePlan } from '../../business/use-cases/plan/duplicatePlan'
 import { addSchedule, calculatePlanData } from '../../business/use-cases/plan/addSchedule'
 import { createPlan } from '../../business/use-cases/plan/createPlan'
 import { removeSchedule } from '../../business/use-cases/plan/removeSchedule'
-import { updatePlan } from '../../data/repository/planRepository'
+import { importPlan, readKrsFile } from '../../business/use-cases/plan/importPlan'
+import { downloadKrs, exportPlan } from '../../business/use-cases/plan/exportPlan'
+import { addPlan, updatePlan } from '../../data/repository/planRepository'
+import type { Plan } from '../../business/types/plan.types'
 import { generatePlanWithAI } from '../../container'
 import { readSource } from './useDataSources'
 
@@ -20,6 +23,27 @@ export function usePlans() {
   return {
     plans: getPlans(),
     availability: calculatePlanData,
+    previewImport: async (file: File, sourceId: string) => {
+      const source = readSource(sourceId)
+      if (!source?.schedules.length) throw new Error('Pilih sumber tujuan yang berisi jadwal.')
+      const result = importPlan(await readKrsFile(file), source, sourceId)
+      if (!result.plan) throw new Error(result.error ?? 'File .krs gagal dibaca.')
+      return { plan: result.plan, warnings: result.warnings ?? [], missing: result.missing ?? [] }
+    },
+    saveImportedPlan: (plan: Plan) => change(() => {
+      const saved = addPlan(plan)
+      if (!saved) throw new Error('Rencana hasil impor gagal disimpan.')
+      return saved
+    }),
+    downloadPlan: (plan: Plan) => {
+      const source = readSource(plan.datasourceId ?? '')
+      if (!source?.schedules.length) throw new Error('Sumber jadwal rencana ini tidak tersedia.')
+      const result = exportPlan(plan, source)
+      if (!result.success || !result.fileName || !result.content) {
+        throw new Error(result.error ?? 'Rencana gagal diekspor.')
+      }
+      downloadKrs(result)
+    },
     createPlan: (name: string, datasourceId: string, courseCodes: string[] = []) =>
       change(() => {
         if (!readSource(datasourceId)?.schedules.length)

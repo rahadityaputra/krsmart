@@ -59,8 +59,11 @@ export function HomePage({ plansDomain, dataSources, onCreate }: {
         </p>}
       </div>
     </section>
-    {importing && <ImportPlanDialog onClose={() => { setImporting(false) }} />}
-    {exporting && <ExportPlanDialog plan={exporting} onClose={() => { setExporting(null) }} />}
+    {importing && <ImportPlanDialog sources={dataSources.sources.filter((source) => Array.isArray(source.schedules) && source.schedules.length > 0)}
+      onPreview={plansDomain.previewImport} onImport={plansDomain.saveImportedPlan}
+      onClose={() => { setImporting(false) }} />}
+    {exporting && <ExportPlanDialog plan={exporting} onDownload={plansDomain.downloadPlan}
+      onClose={() => { setExporting(null) }} />}
     {deleting && <DeletePlanDialog plan={deleting} onDelete={plansDomain.deletePlan} onClose={() => { setDeleting(null); }} />}
   </>
 }

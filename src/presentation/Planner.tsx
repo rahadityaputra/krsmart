@@ -14,10 +14,9 @@ const classTabs = [
   { id: 'blocked', label: 'Kelas bentrok' },
 ] as const
 
-type GroupBy = 'none' | 'lecturer' | 'subject' | 'day'
+type GroupBy = 'lecturer' | 'subject' | 'day'
 
 function groupClasses(courses: Schedule[], groupBy: GroupBy) {
-  if (groupBy === 'none') return [{ key: '', title: '', courses }]
 
   const groups = new Map<string, { key: string; title: string; courses: Schedule[] }>()
   for (const course of courses) {
@@ -60,7 +59,7 @@ export function Planner({ plan, plansDomain, dataSources }: {
   const [error, setError] = useState('')
   const [ai, setAi] = useState(false)
   const [classTab, setClassTab] = useState<(typeof classTabs)[number]['id']>('available')
-  const [groupBy, setGroupBy] = useState<GroupBy>('none')
+  const [groupBy, setGroupBy] = useState<GroupBy>('subject')
   const selected = courses.filter((course) => plan.data?.choosed.includes(course.id))
   const choices = courses.filter((course) => codes.includes(course.course.code))
   const availability = plansDomain.availability(choices, selected.map((course) => course.id))
@@ -143,7 +142,6 @@ export function Planner({ plan, plansDomain, dataSources }: {
               <div className="class-filters">
                 <label className="class-search">Cari kelas<input type="search" value={query} placeholder="Mata kuliah, dosen, atau hari" onChange={(event) => { setQuery(event.target.value); }} /></label>
                 <label>Kelompokkan berdasarkan<select value={groupBy} onChange={(event) => { setGroupBy(event.target.value as GroupBy); }}>
-                  <option value="none">Tanpa pengelompokan</option>
                   <option value="lecturer">Dosen</option>
                   <option value="subject">Mata kuliah</option>
                   <option value="day">Hari</option>
@@ -151,7 +149,7 @@ export function Planner({ plan, plansDomain, dataSources }: {
               </div>
               {!tabCourses.length && <p className="empty">{query.trim() ? 'Tidak ada kelas yang cocok dengan pencarian.' : emptyMessage[id]}</p>}
               {tabCourses.length > 0 && groupClasses(tabCourses, groupBy).map((group) => {
-              const cards = <div className={id === 'available' || groupBy !== 'none' ? 'class-options-grid' : undefined}>
+              const cards = <div className={id === 'available' ? 'class-options-grid' : undefined}>
               {group.courses.map((course) => <div className="class-option" key={course.id}>
                 <div><strong>{course.course.name}</strong><small>{course.className} · {course.course.credits} SKS</small></div>
                 <div><span>{course.day} {time(course)}</span><small>{course.classRoom}</small></div>
@@ -163,7 +161,7 @@ export function Planner({ plan, plansDomain, dataSources }: {
                   </button>}
               </div>)}
               </div>
-              return groupBy === 'none' ? <div key={group.key}>{cards}</div> : <details className="class-group" key={`${groupBy}-${group.key}`}>
+              return <details className="class-group" key={`${groupBy}-${group.key}`}>
                 <summary><span>{group.title}</span><span className="count">{group.courses.length} kelas</span></summary>
                 <div className="class-group-content">{cards}</div>
               </details>
