@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import type { Course } from "../business/types/course.types";
-
 import type { Plan } from "../business/types/plan.types";
 import { Calendar, Dialog, ErrorText } from "./components";
 import type { Workspace } from "./hooks/useWorkspace";
@@ -51,7 +50,9 @@ function groupClasses(items: Schedule[], groupBy: GroupBy): ClassGroup[] {
         (name) => [name, name],
       );
     } else if (groupBy === "subject") {
-      labels = [[item.course.code, `${item.course.name} · ${item.course.code}`]];
+      labels = [
+        [item.course.code, `${item.course.name} · ${item.course.code}`],
+      ];
     } else {
       labels = [[item.day, item.day]];
     }
@@ -402,7 +403,9 @@ export function Planner({
                         )}
                         <div
                           className={
-                            id === "available" ? "class-options-grid" : undefined
+                            id === "available"
+                              ? "class-options-grid"
+                              : undefined
                           }
                         >
                           {group.items.map((item) => (
