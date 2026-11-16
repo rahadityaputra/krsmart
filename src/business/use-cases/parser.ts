@@ -1,107 +1,94 @@
 import type { IntervalTime, Schedule } from "../types/scedule.types";
 import type { Course } from "../types/course.types";
 
-const SUBJECT_REGEX =
-  /^(\S+)\s+(\d{9})\s+(.+?)\s+(IF-\w+)\s+(\d+)\s+(\d+)\s+([A-Za-z]+)\s+(\d{2}:\d{2})-(\d{2}:\d{2})\s+(.+)$/;
-
-const LECTURER_SEPARATOR = /\s*(?:;|\/|\s&\s|\sdan\s)\s*/i;
-
-const NOISE_REGEX =
-  /^(halaman|page|hal\.?|no\.?|kode|nama|dosen|jadwal|semester|total)\b/i;
-
 type RawCourse = Omit<Course, "id">;
 type RawSchedule = Omit<Schedule, "id" | "course"> & { course: RawCourse };
 
-type ParsedLine =
-  | { type: "schedule"; data: RawSchedule }
-  | { type: "lecturers"; names: string[] }
-  | { type: "unknown" };
+// Contoh: "Senin 07:00-10:00"
+const TIME_REGEX = /^([A-Za-z]+)\s+(\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})$/;
 
-const normalizeName = (name: string): string =>
-  name.replace(/\s+/g, " ").trim();
+const isIntegerString = (value: string | undefined): boolean =>
+  value !== undefined && /^-?\d+$/.test(value);
 
-const looksLikeLecturer = (line: string): boolean =>
-  /\p{L}{2,}/u.test(line) &&
-  !/^[\d\s\W]+$/u.test(line) &&
-  !NOISE_REGEX.test(line) &&
-  line.length <= 120;
+/**
+ * Kolom (dipisah tab):
+ * 0 studyProgram | 1 code | 2 name | 3,4 credits/className (urutan bisa tertukar)
+ * 5 numberOfStudent | 6 "Hari HH:MM-HH:MM" | 7 classRoom
+ *
+ * Mengembalikan null kalau baris bukan baris jadwal yang valid.
+ */
+const parseScheduleCells = (cells: string[]): RawSchedule | null => {
+  if (cells.length < 8) return null;
 
-const parseLine = (line: string): ParsedLine => {
-  const match = line.match(SUBJECT_REGEX);
-
-  if (match) {
-    const [
-      ,
-      studyProgram,
-      code,
-      name,
-      className,
-      credits,
-      numberOfStudent,
-      day,
-      start,
-      end,
-      classRoom,
-    ] = match;
-
-    const intervalTime: IntervalTime = { start, end };
-
-    return {
-      type: "schedule",
-      data: {
-        course: {
-          studyProgram,
-          code,
-          name: name.trim(),
-          credits: Number(credits),
-        },
-        className,
-        numberOfStudent: Number(numberOfStudent),
-        day,
-        intervalTime,
-        classRoom: classRoom.trim(),
-        lecturers: [],
-      },
-    };
+  // Kolom 3 dan 4 bisa tertukar: yang berupa angka adalah SKS
+  let creditIndex = 3;
+  let classNameIndex = 4;
+  if (!isIntegerString(cells[creditIndex])) {
+    [creditIndex, classNameIndex] = [classNameIndex, creditIndex];
   }
+  if (!isIntegerString(cells[creditIndex])) return null;
 
-  if (looksLikeLecturer(line)) {
-    const names = line
-      .split(LECTURER_SEPARATOR)
-      .map(normalizeName)
-      .filter((name) => name.length > 0);
+  const time = cells[6].match(TIME_REGEX);
+  if (!time) return null;
 
-    if (names.length > 0) return { type: "lecturers", names };
-  }
+  const [, day, start, end] = time;
+  const intervalTime: IntervalTime = { start, end };
 
-  return { type: "unknown" };
+  return {
+    course: {
+      studyProgram: cells[0],
+      code: cells[1],
+      name: cells[2],
+      credits: parseInt(cells[creditIndex], 10),
+    },
+    className: cells[classNameIndex],
+    numberOfStudent: parseInt(cells[5], 10) || 0,
+    day,
+    intervalTime,
+    classRoom: cells[7],
+    lecturers: [],
+  };
 };
 
-const reduceLines = (schedules: RawSchedule[], line: string): RawSchedule[] => {
-  const parsed = parseLine(line);
+/**
+ * Baris jadwal  : kolom pertama = kode program studi (key)
+ * Baris dosen   : kolom pertama BUKAN key, dan menempel ke jadwal terakhir
+ * Key diambil dari jadwal valid pertama, jadi header sebelumnya terabaikan.
+ */
+const parseLines = (lines: string[]): RawSchedule[] => {
+  const schedules: RawSchedule[] = [];
+  let key = "";
 
-  switch (parsed.type) {
-    case "schedule":
-      return [...schedules, parsed.data];
+  for (const line of lines) {
+    const cells = line.split("\t").map((cell) => cell.trim());
+    const first = cells[0];
 
-    case "lecturers": {
-      if (schedules.length === 0) return schedules;
-      const last = schedules[schedules.length - 1];
-      const added = parsed.names.filter(
-        (name) => !last.lecturers.includes(name),
-      );
-      if (added.length === 0) return schedules;
-      return [
-        ...schedules.slice(0, -1),
-        { ...last, lecturers: [...last.lecturers, ...added] },
-      ];
+    if (key === "") {
+      const schedule = parseScheduleCells(cells);
+      if (schedule) {
+        key = first;
+        schedules.push(schedule);
+      }
+      continue;
     }
 
-    default:
-      return schedules;
+    if (first === key) {
+      const schedule = parseScheduleCells(cells);
+      if (schedule) schedules.push(schedule);
+      continue;
+    }
+
+    // Baris dosen
+    const last = schedules[schedules.length - 1];
+    if (first && !last.lecturers.includes(first)) {
+      last.lecturers.push(first);
+    }
   }
+
+  return schedules;
 };
 
+// Beri id Course (unik per kode mata kuliah) dan id Schedule (per baris)
 const assignIds = (rawSchedules: RawSchedule[]): Schedule[] => {
   const coursesByCode = new Map<string, Course>();
 
@@ -120,9 +107,5 @@ const assignIds = (rawSchedules: RawSchedule[]): Schedule[] => {
 
 export const parseSubjects = (raw: string): Schedule[] =>
   assignIds(
-    raw
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0)
-      .reduce<RawSchedule[]>(reduceLines, []),
+    parseLines(raw.split(/\r?\n/).filter((line) => line.trim().length > 0)),
   );
