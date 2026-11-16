@@ -1,10 +1,16 @@
 import { useRef, useState } from 'react'
 
 const destinations = [
-  { href: '#/', name: 'Beranda', symbol: '▦' },
-  { href: '#/data', name: 'Data Jadwal', symbol: '▤' },
-  { href: '#/compare', name: 'Bandingkan Jadwal', symbol: '≡' },
-]
+  { href: '#/', name: 'Rencana', icon: 'plan' },
+  { href: '#/data', name: 'Data Jadwal', icon: 'catalog' },
+  { href: '#/compare', name: 'Bandingkan Jadwal', icon: 'compare' },
+] as const
+
+const iconPaths = {
+  plan: 'M8 5H6a1 1 0 0 0-1 1v14h14V6a1 1 0 0 0-1-1h-2 M9 3h6v4H9z M9 13l2 2 4-4',
+  catalog: 'M4 6h16v14H4z M8 4v4 M16 4v4 M4 10h16 M8 14h2 M14 14h2 M8 17h2',
+  compare: 'M3 5h8v14H3z M14 5h7v14h-7z M6 9h2 M6 13h2 M17 9h1 M17 15h1',
+}
 
 export function Sidebar({ active, collapsed, onToggle }: {
   active: string
@@ -28,9 +34,14 @@ export function Sidebar({ active, collapsed, onToggle }: {
         menuButton.current?.focus()
       }
     }}>
-      {destinations.map(({ href, name, symbol }) => <a key={href} href={href} aria-label={name}
+      {destinations.map(({ href, name, icon }) => <a key={href} href={href} aria-label={name} className={`nav-${icon}`}
         aria-current={active === href ? 'page' : undefined} onClick={() => { setMobileOpen(false); }}>
-        <span className="nav-symbol" aria-hidden="true">{symbol}</span><span className="nav-label">{name}</span>
+        <span className="nav-symbol" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" strokeWidth="1.65" strokeLinecap="round" strokeLinejoin="round" focusable="false">
+            <path d={iconPaths[icon]} />
+          </svg>
+        </span>
+        <span className="nav-label">{name}</span>
       </a>)}
     </nav>
     <p className="rail-foot">Data tersimpan di browser ini.</p>

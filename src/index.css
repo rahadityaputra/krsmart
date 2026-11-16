@@ -1,14 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif&display=swap');
 
 :root {
-  color: #192334;
-  background: #f6f5f0;
+  color: #25213a;
+  background: #f8f5ef;
   font: 15px/1.5 'DM Sans', system-ui, sans-serif;
-  --ink: #192334;
-  --muted: #525c68;
-  --line: #d9dcd9;
-  --blue: #254ead;
-  --paper: #fffefa;
+  --ink: #25213a;
+  --muted: #5b5366;
+  --line: #ded7e3;
+  --accent: #5639a2;
+  --accent-hover: #442981;
+  --lavender: #eee6fc;
+  --teal: #086456;
+  --mint: #dbf3ea;
+  --amber: #79420d;
+  --peach: #fbe6ce;
+  --paper: #fffdfa;
   --radius: 8px;
   color-scheme: light;
 }
@@ -17,8 +23,8 @@ body { margin: 0; min-width: 320px; }
 button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; }
 button:disabled { cursor: default; opacity: .55; }
-a { color: var(--blue); text-underline-offset: 3px; }
-:focus-visible { outline: 2px solid #3159bd; outline-offset: 3px; }
+a { color: var(--accent); text-underline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 h1, h2, h3, p { margin: 0; }
 h1 { font: 400 clamp(2.8rem, 5vw, 4.5rem)/.98 'Instrument Serif', Georgia, serif; letter-spacing: -.035em; overflow-wrap: anywhere; }
 h2 { font-size: 1.17rem; line-height: 1.3; letter-spacing: -.025em; }
@@ -30,7 +36,7 @@ input:not([type=checkbox]), select, textarea {
   min-height: 42px; max-width: 100%; min-width: 0; padding: 9px 12px; background: #fff;
   border: 1px solid #aeb5ba; border-radius: 6px;
 }
-input[type=checkbox] { accent-color: var(--blue); width: 17px; height: 17px; }
+input[type=checkbox] { accent-color: var(--accent); width: 17px; height: 17px; }
 input[type=file] { width: 100%; }
 textarea { resize: vertical; }
 input::placeholder, textarea::placeholder { color: #5d6570; }
