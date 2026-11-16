@@ -67,7 +67,7 @@ export function Calendar({ courses, onRemove }: { courses: Schedule[]; onRemove?
               top: (minutes(hours(course).start) - first * 60) * 46 / 60,
               height: (minutes(hours(course).end) - minutes(hours(course).start)) * 46 / 60 - 2,
             }}>
-            {onRemove && <button type="button" className="remove-card" onClick={() => onRemove(course)} aria-label={`Batal pilih ${course.course.name} ${course.className}`}>×</button>}
+            {onRemove && <button type="button" className="remove-card" onClick={() => { onRemove(course); }} aria-label={`Batal pilih ${course.course.name} ${course.className}`}>×</button>}
             <strong title={course.course.name}>{course.course.name}</strong>
             <span>{time(course)} · {course.course.credits} SKS</span>
             <small title={course.lecturers.join(', ')}>{course.lecturers.join(', ') || course.classRoom}</small>
