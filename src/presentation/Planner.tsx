@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import type { Course } from '../business/types/course.types'
 import type { Plan } from '../business/types/plan.types'
-import { Calendar, Dialog, ErrorText, credits, time } from './components'
+import { Calendar, Dialog, ErrorText, credits, days, time } from './components'
 import type { Workspace } from './hooks/useWorkspace'
 import { SubjectPicker } from './components/SubjectPicker'
 
@@ -10,6 +10,36 @@ const classTabs = [
   { id: 'available', label: 'Pilih kelas' },
   { id: 'blocked', label: 'Kelas bentrok' },
 ] as const
+
+type GroupBy = 'none' | 'lecturer' | 'subject' | 'day'
+
+function groupClasses(courses: Course[], groupBy: GroupBy) {
+  if (groupBy === 'none') return [{ key: '', title: '', courses }]
+
+  const groups = new Map<string, { key: string; title: string; courses: Course[] }>()
+  for (const course of courses) {
+    const names = [...new Set(course.lecturers.map((name) => name.trim()).filter(Boolean))]
+    const labels = groupBy === 'lecturer'
+      ? (names.length ? names : ['Dosen belum tercantum']).map((name) => [name, name])
+      : groupBy === 'subject'
+        ? [[course.code, `${course.name} · ${course.code}`]]
+        : [[course.schedule.day, course.schedule.day]]
+
+    for (const [key, title] of labels) {
+      const group = groups.get(key) ?? { key, title, courses: [] }
+      group.courses.push(course)
+      groups.set(key, group)
+    }
+  }
+
+  const dayOrder = new Map(days.map((day, index) => [day, index]))
+  return [...groups.values()].sort((a, b) => {
+    if (groupBy === 'day') {
+      return (dayOrder.get(a.key) ?? days.length) - (dayOrder.get(b.key) ?? days.length)
+    }
+    return a.title.localeCompare(b.title, 'id', { numeric: true })
+  })
+}
 
 export function Planner({ plan, workspace, draftCodes, onDraftChange }: {
   plan: Plan
@@ -29,10 +59,11 @@ export function Planner({ plan, workspace, draftCodes, onDraftChange }: {
   const [error, setError] = useState('')
   const [ai, setAi] = useState(false)
   const [classTab, setClassTab] = useState<(typeof classTabs)[number]['id']>('available')
+  const [groupBy, setGroupBy] = useState<GroupBy>('none')
   const selected = courses.filter((course) => plan.data?.choosed.includes(course.id))
   const choices = courses.filter((course) => codes.includes(course.code))
   const availability = workspace.availability(choices, selected.map((course) => course.id))
-  const matches = (course: Course) => `${course.name} ${course.code} ${course.className} ${course.lecturers.join(' ')}`.toLowerCase().includes(query.trim().toLowerCase())
+  const matches = (course: Course) => `${course.name} ${course.code} ${course.className} ${course.schedule.day} ${course.lecturers.join(' ')}`.toLowerCase().includes(query.trim().toLowerCase())
   const ready = choices.filter((course) => availability.available.includes(course.id) && matches(course))
   const blocked = choices.filter((course) => availability.unavailable.some((option) => option.id === course.id && option.reason.some((reason) => reason.startsWith('Bentrok'))) && !selected.some((item) => item.code === course.code) && matches(course))
   const classCounts = { selected: selected.filter(matches).length, available: ready.length, blocked: blocked.length }
@@ -102,10 +133,20 @@ export function Planner({ plan, workspace, draftCodes, onDraftChange }: {
           {classTabs.map(({ id }) => <div key={id} className="class-panel paper" role="tabpanel"
             id={`class-panel-${id}`} aria-labelledby={`class-tab-${id}`} hidden={classTab !== id}>
             {classTab === id && <>
-              <label className="class-search"><span className="sr-only">Cari kelas</span><input type="search" value={query} placeholder="Cari mata kuliah atau dosen…" onChange={(event) => setQuery(event.target.value)} /></label>
+              <div className="class-filters">
+                <label className="class-search">Cari kelas<input type="search" value={query} placeholder="Mata kuliah, dosen, atau hari" onChange={(event) => setQuery(event.target.value)} /></label>
+                <label>Kelompokkan berdasarkan<select value={groupBy} onChange={(event) => setGroupBy(event.target.value as GroupBy)}>
+                  <option value="none">Tanpa pengelompokan</option>
+                  <option value="lecturer">Dosen</option>
+                  <option value="subject">Mata kuliah</option>
+                  <option value="day">Hari</option>
+                </select></label>
+              </div>
               {!tabCourses.length && <p className="empty">{query.trim() ? 'Tidak ada kelas yang cocok dengan pencarian.' : emptyMessage[id]}</p>}
+              {tabCourses.length > 0 && groupClasses(tabCourses, groupBy).map((group) => <div className="class-group" key={group.key}>
+              {group.title && <h3>{group.title} <span className="count">{group.courses.length}</span></h3>}
               <div className={id === 'available' ? 'class-options-grid' : undefined}>
-              {tabCourses.map((course) => <div className="class-option" key={course.id}>
+              {group.courses.map((course) => <div className="class-option" key={course.id}>
                 <div><strong>{course.name}</strong><small>{course.className} · {course.credits} SKS</small></div>
                 <div><span>{course.schedule.day} {time(course)}</span><small>{course.classRoom}</small></div>
                 <div className="class-lecturers">{course.lecturers.map((name) => <small key={name}>{name}</small>)}</div>
@@ -116,6 +157,7 @@ export function Planner({ plan, workspace, draftCodes, onDraftChange }: {
                   </button>}
               </div>)}
               </div>
+              </div>)}
             </>}
           </div>)}
         </section>

@@ -88,7 +88,10 @@ td:nth-child(3), td:nth-child(9) { min-width: 135px; }
 .class-tabs button:hover { color: var(--ink); }
 .class-tabs button[aria-selected=true] { background: var(--paper); border-color: #c6cdc8; color: var(--ink); }
 .class-panel { padding: 0 16px; }
-.class-search { max-width: 360px; padding: 12px 0; }
+.class-filters { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; padding: 12px 0; }
+.class-search { flex: 1 1 230px; max-width: 360px; }
+.class-group + .class-group { border-top: 1px solid var(--line); }
+.class-group h3 { margin: 10px 0; overflow-wrap: anywhere; }
 .class-option { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr) minmax(0, 1fr) minmax(105px, auto); align-items: center; gap: 10px 18px; padding: 12px 0; border-top: 1px solid var(--line); font-size: .88rem; overflow-wrap: anywhere; }
 .class-option small { display: block; }
 .class-option button { justify-self: end; }
