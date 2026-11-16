@@ -4,7 +4,6 @@ const destinations = [
   { href: '#/', name: 'Beranda', symbol: '▦' },
   { href: '#/data', name: 'Data Jadwal', symbol: '▤' },
   { href: '#/compare', name: 'Bandingkan Jadwal', symbol: '≡' },
-  { href: '#/file', name: 'Impor / Ekspor', symbol: '⇄' },
 ]
 
 export function Sidebar({ active, collapsed, onToggle }: {

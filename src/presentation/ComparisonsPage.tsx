@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Calendar, Dialog, ErrorText } from './components'
+import { DeleteButton } from './components/DeleteButton'
 import { credits } from './components/schedule-utils'
 import type { Plans } from './hooks/usePlans'
 import type { DataSources } from './hooks/useDataSources'
@@ -41,10 +42,10 @@ export function ComparisonsPage({ plansDomain, dataSources, comparisons, viewId 
       {!comparisons.views.length && <p className="empty">Belum ada perbandingan tersimpan.</p>}
       {comparisons.views.map((item) => <div className="plan-row" key={item.id}>
         <a className="plan-link" href={`#/compare/${item.id}`}>{item.name}</a>
-        <button type="button" className="quiet danger-text" onClick={() => {
+        <DeleteButton label={`Hapus perbandingan ${item.name}`} onClick={() => {
           setDeleteError('')
           setDeleting(item)
-        }}>Hapus<span className="sr-only"> {item.name}</span></button>
+        }} />
       </div>)}
     </div>
     {deleting && <Dialog title="Hapus perbandingan?" onClose={() => { setDeleting(null); }}>

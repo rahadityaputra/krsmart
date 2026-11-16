@@ -4,17 +4,17 @@ import * as DialogPrimitive from '@radix-ui/react-dialog'
 import type { Schedule } from '../business/types/scedule.types'
 import { days, hours, minutes, time } from './components/schedule-utils'
 
-export function Dialog({ title, children, onClose, wide = false }: {
+export function Dialog({ title, children, onClose, size = 'default' }: {
   title: string
   children: ReactNode
   onClose: () => void
-  wide?: boolean
+  size?: 'default' | 'wide' | 'table'
 }) {
   const opener = useRef<HTMLElement | null>(null)
   return <DialogPrimitive.Root open onOpenChange={(open) => { if (!open) onClose() }}>
     <DialogPrimitive.Portal>
       <DialogPrimitive.Overlay className="dialog-overlay" />
-      <DialogPrimitive.Content className={`dialog-content ${wide ? 'dialog-wide' : ''}`} aria-describedby={undefined}
+      <DialogPrimitive.Content className={`dialog-content dialog-${size}`} aria-describedby={undefined}
         onOpenAutoFocus={() => {
           if (document.activeElement instanceof HTMLElement) opener.current = document.activeElement
         }}

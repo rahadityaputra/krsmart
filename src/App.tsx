@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { CatalogPage, TransferPage } from './presentation/CatalogPages'
+import { CatalogPage } from './presentation/CatalogPages'
 import { ComparisonsPage } from './presentation/ComparisonsPage'
 import { HomePage } from './presentation/HomePage'
 import { Planner } from './presentation/Planner'
@@ -32,8 +32,6 @@ export default function App() {
       viewId={route === '#/compare' ? undefined : route.slice('#/compare/'.length)} />
   } else if (route === '#/data') {
     page = <CatalogPage dataSources={dataSources} />
-  } else if (route === '#/file') {
-    page = <TransferPage />
   } else if (route === '#/') {
     page = <HomePage plansDomain={plansDomain} dataSources={dataSources} onCreate={(id) => {
       location.hash = `/plan/${id}`

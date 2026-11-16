@@ -25,7 +25,7 @@ export function ScheduleAssistant({ onGenerate, onClose, replacesSchedule }: {
     }
   }
 
-  return <Dialog title="Asisten jadwal" wide onClose={() => { if (!loading) onClose() }}>
+  return <Dialog title="Asisten jadwal" size="wide" onClose={() => { if (!loading) onClose() }}>
     <form onSubmit={(event) => {
       event.preventDefault()
       if (!loading && prompt.trim()) void generate()

@@ -2,6 +2,8 @@ import { useState } from 'react'
 import type { Plan } from '../business/types/plan.types'
 import { Dialog, ErrorText } from './components'
 import { CreatePlanForm } from './components/CreatePlanForm'
+import { DeleteButton } from './components/DeleteButton'
+import { ExportPlanDialog, ImportPlanDialog } from './components/PlanFileDialogs'
 import type { Plans } from './hooks/usePlans'
 import type { DataSources } from './hooks/useDataSources'
 
@@ -10,6 +12,8 @@ export function HomePage({ plansDomain, dataSources, onCreate }: {
   onCreate: (id: string) => void
 }) {
   const [creating, setCreating] = useState(false)
+  const [importing, setImporting] = useState(false)
+  const [exporting, setExporting] = useState<Plan | null>(null)
   const [deleting, setDeleting] = useState<Plan | null>(null)
   const [query, setQuery] = useState('')
   const plans = plansDomain.plans.filter((plan) => plan.name.toLowerCase().includes(query.trim().toLowerCase()))
@@ -22,10 +26,13 @@ export function HomePage({ plansDomain, dataSources, onCreate }: {
   return <>
     <header className="page-heading">
       <div><h1>Rencana KRS</h1><p>Buat rencana dari sumber jadwal kampus atau buka rencana yang sudah tersimpan untuk memilih kelas.</p></div>
-      {dataSources.sources.length
-        ? <button className="primary" onClick={() => {setCreating(true)}}>Tambah rencana</button>
-        : <a className="primary action-link" href="#/data">Tambah sumber data</a>}
+      <div className="button-row">
+        <button type="button" className="secondary" onClick={() => { setImporting(true) }}>Impor rencana</button>
+        <button type="button" className="primary" disabled={!dataSources.sources.length}
+          onClick={() => { setCreating(true) }}>Buat rencana</button>
+      </div>
     </header>
+    {!dataSources.sources.length && <p className="notice">Untuk membuat rencana, tambahkan jadwal kampus di <a href="#/data">Data Jadwal</a>.</p>}
     <section className="plans-section" aria-labelledby="plans-title">
       <div className="section-heading">
         <h2 id="plans-title">Rencana tersimpan <span className="count">{plansDomain.plans.length}</span></h2>
@@ -37,17 +44,23 @@ export function HomePage({ plansDomain, dataSources, onCreate }: {
             <a className="plan-link" href={`#/plan/${plan.id}`}>{plan.name}</a>
             <small>{dataSources.sources.find((source) => source.id === plan.datasourceId)?.name ?? 'Sumber belum tersedia'} · {plan.data?.choosed.length ?? 0} jadwal dipilih</small>
           </div>
-          <button className="quiet danger-text" onClick={() => { setDeleting(plan); }}>Hapus<span className="sr-only"> {plan.name}</span></button>
+          <div className="button-row">
+            <button type="button" className="secondary" aria-label={`Ekspor rencana ${plan.name}`}
+              onClick={() => { setExporting(plan) }}>Ekspor</button>
+            <DeleteButton label={`Hapus rencana ${plan.name}`} onClick={() => { setDeleting(plan) }} />
+          </div>
         </div>)}
         {!plansDomain.plans.length && <div className="empty">
           <strong>Belum ada rencana.</strong>
-          <p>{dataSources.sources.length ? 'Pilih sumber jadwal untuk membuat rencana pertama.' : 'Tambahkan jadwal kampus di Data Jadwal untuk mulai membuat rencana.'}</p>
+          {dataSources.sources.length > 0 && <p>Pilih sumber jadwal untuk membuat rencana pertama.</p>}
         </div>}
         {plansDomain.plans.length > 0 && !plans.length && <p className="empty">
           Tidak ada rencana yang cocok. <button className="quiet" onClick={() => { setQuery(''); }}>Hapus pencarian</button>
         </p>}
       </div>
     </section>
+    {importing && <ImportPlanDialog onClose={() => { setImporting(false) }} />}
+    {exporting && <ExportPlanDialog plan={exporting} onClose={() => { setExporting(null) }} />}
     {deleting && <DeletePlanDialog plan={deleting} onDelete={plansDomain.deletePlan} onClose={() => { setDeleting(null); }} />}
   </>
 }
